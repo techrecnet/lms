@@ -1,11 +1,12 @@
 import React from 'react'
+
 import ReactDOM from 'react-dom/client'
 import { Provider } from 'react-redux'
 import { BrowserRouter } from 'react-router-dom'
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material'
 import { store } from './app/store'
 import AppRouter from './app/router'
-
+import './global.css'
 const theme = createTheme({
   palette: {
     mode: 'light',

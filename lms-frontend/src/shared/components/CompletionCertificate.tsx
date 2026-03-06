@@ -74,136 +74,47 @@ export default function CompletionCertificate({
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle sx={{ fontWeight: 600 }}>Completion Certificate</DialogTitle>
-      <DialogContent sx={{ p: 3 }}>
-        <Stack spacing={2}>
+      <DialogTitle className="font-semibold">Completion Certificate</DialogTitle>
+      <DialogContent className="p-6">
+        <div className="space-y-6">
           {/* Certificate Preview */}
-          <Paper
+          <div
             ref={certificateRef}
-            sx={{
-              p: 4,
-              textAlign: 'center',
-              background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
-              minHeight: 400,
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-around',
-              position: 'relative',
-              border: '3px solid #d4af37',
-              borderRadius: 2,
-            }}
+            className="relative flex flex-col justify-around items-center min-h-[400px] p-8 text-center bg-gradient-to-br from-gray-100 to-blue-100 border-4 border-yellow-600 rounded-lg"
           >
             {/* Decorative corners */}
-            <Box sx={{ position: 'absolute', top: 10, left: 10, width: 30, height: 30, border: '2px solid #d4af37' }} />
-            <Box sx={{ position: 'absolute', top: 10, right: 10, width: 30, height: 30, border: '2px solid #d4af37' }} />
-            <Box sx={{ position: 'absolute', bottom: 10, left: 10, width: 30, height: 30, border: '2px solid #d4af37' }} />
-            <Box sx={{ position: 'absolute', bottom: 10, right: 10, width: 30, height: 30, border: '2px solid #d4af37' }} />
+            <div className="absolute top-2 left-2 w-8 h-8 border-2 border-yellow-600 rounded" />
+            <div className="absolute top-2 right-2 w-8 h-8 border-2 border-yellow-600 rounded" />
+            <div className="absolute bottom-2 left-2 w-8 h-8 border-2 border-yellow-600 rounded" />
+            <div className="absolute bottom-2 right-2 w-8 h-8 border-2 border-yellow-600 rounded" />
 
-            <Box sx={{ zIndex: 1 }}>
+            <div className="z-10 w-full">
               {/* Header */}
-              <Typography
-                variant="h4"
-                sx={{
-                  fontWeight: 700,
-                  color: '#1a237e',
-                  letterSpacing: 2,
-                  mb: 1,
-                  textTransform: 'uppercase',
-                }}
-              >
-                Certificate
-              </Typography>
-              <Typography
-                variant="h5"
-                sx={{
-                  fontWeight: 600,
-                  color: '#1a237e',
-                  letterSpacing: 1,
-                  mb: 3,
-                }}
-              >
-                of Completion
-              </Typography>
+              <div className="uppercase font-bold text-3xl text-blue-900 tracking-widest mb-2">Certificate</div>
+              <div className="font-semibold text-2xl text-blue-900 tracking-wide mb-6">of Completion</div>
 
               {/* Body Text */}
-              <Typography
-                variant="body1"
-                sx={{
-                  color: '#424242',
-                  mb: 2,
-                  fontStyle: 'italic',
-                }}
-              >
-                This is to certify that
-              </Typography>
+              <div className="italic text-gray-700 mb-4 text-lg">This is to certify that</div>
 
               {/* Name */}
-              <Typography
-                variant="h6"
-                sx={{
-                  fontWeight: 700,
-                  color: '#8b4513',
-                  mb: 2,
-                  borderBottom: '2px solid #d4af37',
-                  pb: 1,
-                  minHeight: 30,
-                }}
-              >
-                {userName}
-              </Typography>
+              <div className="font-bold text-xl text-yellow-900 mb-4 border-b-2 border-yellow-600 pb-2 min-h-[30px]">{userName}</div>
 
               {/* Achievement Text */}
-              <Typography
-                variant="body1"
-                sx={{
-                  color: '#424242',
-                  mb: 1,
-                }}
-              >
-                has successfully completed the course
-              </Typography>
+              <div className="text-gray-700 mb-2 text-lg">has successfully completed the course</div>
 
               {/* Course Name */}
-              <Typography
-                variant="h6"
-                sx={{
-                  fontWeight: 700,
-                  color: '#1a237e',
-                  mb: 2,
-                  borderBottom: '2px solid #d4af37',
-                  pb: 1,
-                }}
-              >
-                {courseName}
-              </Typography>
+              <div className="font-bold text-xl text-blue-900 mb-4 border-b-2 border-yellow-600 pb-2">{courseName}</div>
 
               {/* Completion Date */}
-              <Typography
-                variant="body2"
-                sx={{
-                  color: '#424242',
-                  mt: 3,
-                }}
-              >
-                Date of Completion: <strong>{formatDate(completionDate)}</strong>
-              </Typography>
+              <div className="text-gray-700 mt-6 text-base">Date of Completion: <strong>{formatDate(completionDate)}</strong></div>
 
               {/* Email */}
-              <Typography
-                variant="caption"
-                sx={{
-                  color: '#666',
-                  mt: 1,
-                  display: 'block',
-                }}
-              >
-                {userEmail}
-              </Typography>
-            </Box>
-          </Paper>
-        </Stack>
+              <div className="text-gray-500 mt-2 text-sm">{userEmail}</div>
+            </div>
+          </div>
+        </div>
       </DialogContent>
-      <DialogActions sx={{ p: 2 }}>
+      <DialogActions className="p-4">
         <Button onClick={onClose} variant="outlined">
           Close
         </Button>

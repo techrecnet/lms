@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+:root {
+	--primary: #392C7D;
+	--secondary: #FF4667;
+}
+
+/* small helpers for legacy button classes used across the template */
+.btn-primary {
+	background-color: var(--primary);
+	color: #fff;
+    border-radius: 10px;
+}
+.btn-secondary {
+	background-color: var(--secondary);
+	color: #fff;
+    border-radius: 10px;
+  
+}
+
+/* Fallback utility in case Tailwind classes aren't present at runtime */
+.bg-primary {
+	background-color: var(--primary) !important;
+}
+
+/* Simple AOS-like animations */
+@keyframes fadeUp {
+	from { opacity: 0; transform: translateY(12px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+
+.aos-fade-up { opacity: 0; animation: fadeUp 0.6s ease forwards; }
+.aos-delay-150 { animation-delay: 0.15s; }
+.aos-delay-250 { animation-delay: 0.25s; }
+
+/* Simple collapse animation for accordion bodies */
+.collapse-body {
+	max-height: 0;
+	overflow: hidden;
+	transition: max-height 0.32s ease;
+}
+.collapse-body.open {
+	max-height: 400px;
+}
+
+/* Scoped: make all headings white inside the LandingPage component only */
+.landing-page h1,
+.landing-page h2,
+.landing-page h3,
+.landing-page h4,
+.landing-page h5,
+.landing-page h6 {
+	color: #ffffff !important;
+}
+
+/* Override: keep h2 black inside LandingPage despite the white-heading rule */
+.landing-page h2 {
+	color: #000000 !important;
+}
+
+/* Override: keep h5 black inside LandingPage despite the white-heading rule */
+.landing-page h5 {
+	color: #ffffff !important;
+}
+
+/* Allow Tailwind's `text-gray-900` on specific h5 elements to win when present */
+.landing-page h5.text-gray-900 {
+	color: #111827 !important;
+}
+a{
+    text-decoration: none;
+    color:white;
+}

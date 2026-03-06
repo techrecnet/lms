@@ -33,6 +33,7 @@ import { useNavigate } from 'react-router-dom'
 import { exportToCsv } from '../../../shared/utils/exportCsv'
 
 export default function TopicLibraryPage() {
+    const [selected, setSelected] = useState<string[]>([])
   const navigate = useNavigate()
   const [rows, setRows] = useState<any[]>([])
   const [bulkDialog, setBulkDialog] = useState(false)
@@ -54,7 +55,7 @@ export default function TopicLibraryPage() {
     setLoading(true)
     try {
       const [topicRes, courseRes] = await Promise.all([
-        api.get('/topics-lib', {
+        api.get('/api/topics-lib', {
           params: { courseId: courseId || undefined }
         }),
         api.get('/courses')
@@ -80,7 +81,7 @@ export default function TopicLibraryPage() {
 
     setDeleting(true)
     try {
-      await api.delete(`/topics-lib/${deleteId}`)
+      await api.delete(`/api/topics-lib/${deleteId}`)
       setSnackbar({
         open: true,
         message: 'Topic deleted successfully',
@@ -131,7 +132,7 @@ export default function TopicLibraryPage() {
     }))
     setBulkLoading(true)
     try {
-      const res = await api.post('/topics-lib/bulk', topics)
+      const res = await api.post('/api/topics-lib/bulk', topics)
       setSnackbar({ open: true, message: `Imported ${res.data.imported} topics`, severity: 'success' })
       setBulkDialog(false)
       load()
@@ -139,6 +140,31 @@ export default function TopicLibraryPage() {
       setBulkError(err.response?.data?.msg || 'Bulk import failed')
     } finally {
       setBulkLoading(false)
+    }
+  }
+
+  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      setSelected(rows.map(r => r._id))
+    } else {
+      setSelected([])
+    }
+  }
+
+  const handleSelectOne = (id: string) => {
+    setSelected(prev => prev.includes(id) ? prev.filter(s => s !== id) : [...prev, id])
+  }
+
+  const handleBulkDelete = async () => {
+    if (selected.length === 0) return
+    if (!window.confirm(`Delete ${selected.length} topics? This cannot be undone.`)) return
+    try {
+      await Promise.all(selected.map(id => api.delete(`/api/topics-lib/${id}`)))
+      setSnackbar({ open: true, message: `Deleted ${selected.length} topics`, severity: 'success' })
+      setSelected([])
+      load()
+    } catch (err: any) {
+      setSnackbar({ open: true, message: 'Bulk delete failed', severity: 'error' })
     }
   }
 
@@ -184,6 +210,14 @@ export default function TopicLibraryPage() {
                 <Button variant="outlined" color="secondary" onClick={() => setBulkDialog(true)}>
                   Bulk Import
                 </Button>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  disabled={selected.length === 0}
+                  onClick={handleBulkDelete}
+                >
+                  Delete Selected
+                </Button>
               </Stack>
             }
           />
@@ -222,6 +256,14 @@ export default function TopicLibraryPage() {
               <Table>
                 <TableHead>
                   <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                    <TableCell padding="checkbox">
+                      <input
+                        type="checkbox"
+                        checked={selected.length === rows.length && rows.length > 0}
+                        onChange={handleSelectAll}
+                        aria-label="Select all topics"
+                      />
+                    </TableCell>
                     <TableCell>Topic</TableCell>
                     <TableCell>Courses</TableCell>
                     <TableCell align="right">Actions</TableCell>
@@ -230,13 +272,21 @@ export default function TopicLibraryPage() {
                 <TableBody>
                   {rows.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={3} align="center" sx={{ py: 3 }}>
+                      <TableCell colSpan={4} align="center" sx={{ py: 3 }}>
                         No topics found
                       </TableCell>
                     </TableRow>
                   ) : (
                     rows.map((topic) => (
-                      <TableRow key={topic._id} hover>
+                      <TableRow key={topic._id} hover selected={selected.includes(topic._id)}>
+                        <TableCell padding="checkbox">
+                          <input
+                            type="checkbox"
+                            checked={selected.includes(topic._id)}
+                            onChange={() => handleSelectOne(topic._id)}
+                            aria-label={`Select topic ${topic.title}`}
+                          />
+                        </TableCell>
                         <TableCell>{topic.title}</TableCell>
                         <TableCell>
                           <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
