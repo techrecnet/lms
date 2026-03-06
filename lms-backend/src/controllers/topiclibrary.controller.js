@@ -33,9 +33,10 @@ const TopicLibrary = require('../models/TopicLibrary');
 const { generateSummary } = require('../services/ai.service');
 
 exports.list = async (req, res) => {
-  const { courseId } = req.query;
+  const { courseId, topic } = req.query;
   const filter = {};
   if (courseId) filter.courseIds = { $in: [courseId] };
+  if (topic) filter.title = { $regex: topic, $options: 'i' };
 
   const items = await TopicLibrary.find(filter)
     .populate('courseIds', 'title')
