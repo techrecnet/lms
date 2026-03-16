@@ -1,0 +1,31 @@
+{
+  "sessionId": "69b5cec5e397208cb0bba7cb",
+  "mentor": "6995f7628c682a6a6fa82b68",
+  "courses": [
+    "69b4ee857b0114bbfd6e53c9"
+  ],
+  "startTime": "2026-03-14T21:11:00.000Z",
+  "actualStartTime": "2026-03-14T21:10:57.255Z",
+  "actualEndTime": "2026-03-14T21:11:57.043Z",
+  "durationMinutes": 1,
+  "chatLog": [],
+  "whiteboardLog": [],
+  "userActivityLog": [
+    {
+      "userId": "698f871c778527efe217de6a",
+      "userName": "Bharat",
+      "action": "joined",
+      "timestamp": "2026-03-14T21:11:13.786Z",
+      "duration": 1,
+      "_id": "69b5cef1e397208cb0bba82e"
+    },
+    {
+      "userId": "6995f7628c682a6a6fa82b68",
+      "userName": "Unknown",
+      "action": "left",
+      "timestamp": "2026-03-14T21:11:54.191Z",
+      "duration": 0,
+      "_id": "69b5cf1ae397208cb0bba960"
+    }
+  ]
+}

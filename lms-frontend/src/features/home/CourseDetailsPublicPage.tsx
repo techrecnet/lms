@@ -179,9 +179,7 @@ export default function CourseDetailsPublicPage() {
               <Typography variant="h6" sx={{ color: 'rgba(255,255,255,0.9)' }}>
                 {course.description}
               </Typography>
-              {course.duration && (
-                <Chip label={course.duration} sx={{ width: 'fit-content', bgcolor: 'rgba(255,255,255,0.2)', color: '#fff' }} />
-              )}
+              
             </Stack>
           </Stack>
         </Container>

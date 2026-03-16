@@ -85,7 +85,31 @@ export default function TopicLibraryForm({ title, courses, initialValues, submit
           <Stack>
             <Typography variant="subtitle2" sx={{ mb: 1 }}>Content</Typography>
             <Box sx={{ '& .ql-editor': { minHeight: 250 } }}>
-              <ReactQuill value={values.content} onChange={(content) => setValues({ ...values, content })} />
+              <ReactQuill
+                value={values.content}
+                onChange={(content) => setValues({ ...values, content })}
+                modules={{
+                  toolbar: {
+                    container: [
+                      [{ 'font': [] }, { 'size': ['small', false, 'large', 'huge'] }],
+                      [{ header: [1, 2, 3, 4, 5, 6, false] }],
+                      ['bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block'],
+                      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                      [{ 'indent': '-1' }, { 'indent': '+1' }],
+                      [{ 'color': [] }, { 'background': [] }],
+                      [{ 'align': [] }],
+                      ['link', 'image', 'video', 'clean']
+                    ],
+                    handlers: {
+                      // default handlers - can be extended later for custom upload
+                    }
+                  }
+                }}
+                formats={[
+                  'font','size','header','bold','italic','underline','strike','blockquote','code-block',
+                  'list','bullet','indent','color','background','align','link','image','video'
+                ]}
+              />
             </Box>
           </Stack>
 

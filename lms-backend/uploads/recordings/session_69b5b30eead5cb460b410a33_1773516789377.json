@@ -1,0 +1,62 @@
+{
+  "sessionId": "69b5b30eead5cb460b410a33",
+  "mentor": "6995f7628c682a6a6fa82b68",
+  "courses": [
+    "69b4ee857b0114bbfd6e53c9"
+  ],
+  "startTime": "2026-03-14T22:14:00.000Z",
+  "endTime": "2026-03-14T19:33:09.377Z",
+  "chatLog": [
+    {
+      "sender": "698f871c778527efe217de6a",
+      "senderName": "Bharat",
+      "type": "text",
+      "content": "Hi Every one",
+      "isGroupChat": true,
+      "recipient": null,
+      "timestamp": "2026-03-14T19:24:32.406Z",
+      "_id": "69b5b5f0629e381a101aa638"
+    },
+    {
+      "sender": "6995f7628c682a6a6fa82b68",
+      "senderName": "Unknown",
+      "type": "text",
+      "content": "Hi",
+      "isGroupChat": true,
+      "recipient": null,
+      "timestamp": "2026-03-14T19:25:42.247Z",
+      "_id": "69b5b636629e381a101aa6af"
+    },
+    {
+      "sender": "6995f7628c682a6a6fa82b68",
+      "senderName": "Unknown",
+      "type": "text",
+      "content": "Test",
+      "isGroupChat": true,
+      "recipient": null,
+      "timestamp": "2026-03-14T19:25:46.230Z",
+      "_id": "69b5b63a629e381a101aa6c6"
+    },
+    {
+      "sender": "6995f7628c682a6a6fa82b68",
+      "senderName": "Unknown",
+      "type": "text",
+      "content": "das",
+      "isGroupChat": true,
+      "recipient": null,
+      "timestamp": "2026-03-14T19:26:08.305Z",
+      "_id": "69b5b650629e381a101aa73c"
+    },
+    {
+      "sender": "6995f7628c682a6a6fa82b68",
+      "senderName": "Unknown",
+      "type": "text",
+      "content": "sds",
+      "isGroupChat": true,
+      "recipient": null,
+      "timestamp": "2026-03-14T19:30:32.140Z",
+      "_id": "69b5b75888c269f6287a2bbd"
+    }
+  ],
+  "whiteboardLog": []
+}

@@ -36,6 +36,7 @@ import TopicLibraryPage from '../features/admin/topics/TopicLibraryPage'
 import TopicLibraryCreatePage from '../features/admin/topics/TopicCreatePage'
 import TopicLibraryEditPage from '../features/admin/topics/TopicEditPage'
 import AdminHTMLPlayPage from '../features/admin/htmlplay/HTMLPlayPage'
+import InteractionSessionsManagement from '../features/admin/interaction/InteractionSessionsManagement'
 
 import UserHome from '../features/user/dashboard/UserHome'
 import UserCoursePage from '../features/user/courses/UserCoursePage'
@@ -45,6 +46,9 @@ import ProfileImagePage from '../features/user/profile/ProfileImagePage'
 import UserHTMLPlayPage from '../features/user/htmlplay/HTMLPlayPage'
 import MentorHome from '../features/mentor/dashboard/MentorHome'
 import StudentDetailsPage from '../features/mentor/dashboard/StudentDetailsPage'
+
+import InteractionBoard from '../features/interaction/InteractionBoard'
+import SessionReview from '../features/interaction/SessionReview'
 
 export default function AppRouter() {
   return (
@@ -194,6 +198,11 @@ export default function AppRouter() {
           <AdminLayout><AdminHTMLPlayPage /></AdminLayout>
         </RequireRole>
       } />
+      <Route path="/admin/interaction" element={
+        <RequireRole role="admin">
+          <AdminLayout><InteractionSessionsManagement /></AdminLayout>
+        </RequireRole>
+      } />
 
       <Route path="/app" element={
         <RequireAuth>
@@ -225,6 +234,11 @@ export default function AppRouter() {
           <UserLayout><UserHTMLPlayPage /></UserLayout>
         </RequireAuth>
       } />
+      <Route path="/user/interaction/:id" element={
+        <RequireAuth>
+          <UserLayout><InteractionBoard /></UserLayout>
+        </RequireAuth>
+      } />
 
       <Route path="/mentor" element={
         <RequireRole role="mentor">
@@ -254,6 +268,16 @@ export default function AppRouter() {
       <Route path="/mentor/students/:id" element={
         <RequireRole role="mentor">
           <MentorLayout><StudentDetailsPage /></MentorLayout>
+        </RequireRole>
+      } />
+      <Route path="/mentor/interaction/:id" element={
+        <RequireRole role="mentor">
+          <MentorLayout><InteractionBoard /></MentorLayout>
+        </RequireRole>
+      } />
+      <Route path="/mentor/interaction/:id/review" element={
+        <RequireRole role="mentor">
+          <MentorLayout><SessionReview /></MentorLayout>
         </RequireRole>
       } />
     </Routes>

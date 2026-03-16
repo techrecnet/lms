@@ -6,10 +6,10 @@ import { setToken } from './authSlice'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 // import template CSS so the login page matches the HTML template
-import '../../source/Login_files/bootstrap.min.css'
-import '../../source/Login_files/slick.css'
-import '../../source/Login_files/slick-theme.css'
-import '../../source/Login_files/style.css'
+import '../../css/bootstrap.min.css'
+import '../../css/slick.css'
+import '../../css/slick-theme.css'
+import '../../css/style.css'
 
 type Form = { email: string; password: string }
 
@@ -47,10 +47,10 @@ export default function Login() {
             <div className="login-carousel">
               <div className="login-carousel-section">
                 <div className="login-banner">
-                  <img src="/src/source/Login_files/auth-1.svg" className="img-fluid" alt="Logo" />
+                  <img src="../../../images/auth-1.svg" className="img-fluid" alt="Logo" />
                 </div>
                 <div className="mentor-course text-center">
-                  <h3 className="mb-2">Welcome to <br />Dreams<span className="text-secondary">LMS</span> Courses.</h3>
+                  <h3 className="mb-2">Welcome to <br />Recnet<span className="text-secondary">LMS</span> Courses.</h3>
                   <p>Platform designed to help organizations, educators, and learners manage, deliver, and track learning and training activities.</p>
                 </div>
               </div>
@@ -62,7 +62,7 @@ export default function Login() {
               <div className="loginbox">
                 <div className="w-100">
                   <div className="d-flex align-items-center justify-content-between login-header">
-                    <img src="/src/source/Login_files/logo.svg" className="img-fluid" alt="Logo" />
+                    <img src="../../../images/logo.svg" className="img-fluid" alt="Logo" />
                     <a href="#" className="link-1">Back to Home</a>
                   </div>
                   <h1 className="fs-32 fw-bold topic">Sign into Your Account</h1>

@@ -1,5 +1,8 @@
+import React, { useEffect } from 'react'
 import { Box, Stack, Typography } from '@mui/material'
 import { parseContentForYoutube, removeYoutubeLinks } from '../utils/youtubeUtils'
+import hljs from 'highlight.js'
+import 'highlight.js/styles/github.css'
 
 type Props = {
   content: string
@@ -9,12 +12,81 @@ export default function ContentRenderer({ content }: Props) {
   const { youtubeIds } = parseContentForYoutube(content)
   const cleanedContent = removeYoutubeLinks(content)
 
+  useEffect(() => {
+    // highlight any code blocks inside rendered HTML
+    const blocks = Array.from(document.querySelectorAll('pre code'))
+    blocks.forEach((block) => {
+      try {
+        hljs.highlightElement(block as HTMLElement)
+      } catch (e) {
+        // ignore highlighting errors
+      }
+    })
+  }, [cleanedContent])
+
   return (
     <Stack spacing={3}>
       {/* Original HTML Content (with YouTube links removed) */}
       {cleanedContent && (
         <Box
-          sx={{ fontSize: '0.875rem', lineHeight: 1.8, color: '#555' }}
+          sx={{
+            whiteSpace: 'pre-wrap',
+            fontSize: '0.875rem',
+            lineHeight: 1.8,
+            color: '#555',
+            '& ul, & ol': {
+              paddingLeft: 0,
+              marginTop: 0,
+              marginBottom: 0,
+              listStylePosition: 'outside'
+            },
+            '& ul': {
+              listStyleType: 'disc',
+            },
+            '& ol': {
+              listStyleType: 'decimal',
+            },
+            '& li': {
+              marginBottom: 0
+            },
+            '& pre': {
+              backgroundColor: '#f5f5f5',
+              color: '#111',
+              padding: '12px',
+              borderRadius: 6,
+              whiteSpace: 'pre',
+              overflowX: 'auto',
+              fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace',
+              fontSize: '0.85rem'
+            },
+            '& code': {
+              backgroundColor: 'rgba(0,0,0,0.04)',
+              padding: '2px 6px',
+              borderRadius: 4,
+              fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace'
+            },
+            '& pre code': {
+              backgroundColor: 'transparent',
+              padding: 0
+            },
+            '& table': {
+              width: '100%',
+              borderCollapse: 'collapse'
+            },
+            '& th, & td': {
+              border: '1px solid rgba(0,0,0,0.08)',
+              padding: '8px',
+              textAlign: 'left'
+            },
+            '& ul, & ol': {
+              paddingLeft: 20,
+              marginTop: 6,
+              marginBottom: 6
+            },
+            '& a': {
+              color: '#1976d2'
+            }
+          }}
           dangerouslySetInnerHTML={{ __html: cleanedContent }}
         />
       )}

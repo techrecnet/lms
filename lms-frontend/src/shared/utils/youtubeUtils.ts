@@ -49,20 +49,35 @@ export function parseContentForYoutube(html: string): { hasYoutube: boolean; you
 }
 
 export function removeYoutubeLinks(html: string): string {
-  // Remove YouTube links from href attributes
-  let cleaned = html.replace(
-    /href=["']([^"']*(?:youtube\.com|youtu\.be)[^"']*)['">[^>]*>([^<]*)<\/a>/g,
-    ''
-  )
-  
-  // Remove plain YouTube URLs
-  cleaned = cleaned.replace(
-    /(https?:\/\/(?:www\.)?(?:youtube\.com|youtu\.be)[^\s<>"']+)/g,
-    ''
-  )
-  
-  // Clean up extra whitespace
-  cleaned = cleaned.replace(/\s+/g, ' ').trim()
-  
-  return cleaned
+  try {
+    const parser = new DOMParser()
+    const doc = parser.parseFromString(html, 'text/html')
+
+    // Replace anchor tags that point to YouTube with their text content
+    doc.querySelectorAll('a').forEach((a) => {
+      const href = a.getAttribute('href') || ''
+      if (isYoutubeUrl(href)) {
+        const text = a.textContent || ''
+        const textNode = doc.createTextNode(text)
+        a.parentNode?.replaceChild(textNode, a)
+      }
+    })
+
+    // Remove plain YouTube URLs from text nodes
+    const walker = doc.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT, null)
+    while (walker.nextNode()) {
+      const node = walker.currentNode as Text
+      if (!node.nodeValue) continue
+      const newVal = node.nodeValue.replace(/https?:\/\/(?:www\.)?(?:youtube\.com|youtu\.be)[^\s<>"']+/g, '')
+      if (newVal !== node.nodeValue) node.nodeValue = newVal
+    }
+
+    const cleaned = doc.body.innerHTML.replace(/^\s+|\s+$/g, '')
+    return cleaned
+  } catch (e) {
+    // Fallback to regex-based removal if DOMParser isn't available
+    let cleaned = html.replace(/href=["']([^"']*(?:youtube\.com|youtu\.be)[^"']*)['">[^>]*>([^<]*)<\/a>/g, '')
+    cleaned = cleaned.replace(/(https?:\/\/(?:www\.)?(?:youtube\.com|youtu\.be)[^\s<>"']+)/g, '')
+    return cleaned.replace(/^\s+|\s+$/g, '')
+  }
 }

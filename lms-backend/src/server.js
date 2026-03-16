@@ -27,6 +27,7 @@ app.use('/api/questions', require('./routes/questionbank.routes'));
 app.use('/api/topics-lib', require('./routes/topiclibrary.routes'));
 app.use('/api/progress', require('./routes/progress.routes'));
 app.use('/api/mentor', require('./routes/mentor.routes'));
+app.use('/api/interaction', require('./routes/interaction.routes'));
 
 app.get('/api/health', (req, res) => res.json({ ok: true }));
 

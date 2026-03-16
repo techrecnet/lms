@@ -143,7 +143,6 @@ export default function CoursesPage() {
                   <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
                     <TableCell>Image</TableCell>
                     <TableCell>Course</TableCell>
-                    <TableCell>Description</TableCell>
                     <TableCell>Duration</TableCell>
                     <TableCell>Sections</TableCell>
                     <TableCell align="right">Actions</TableCell>
@@ -170,7 +169,6 @@ export default function CoursesPage() {
                           )}
                         </TableCell>
                         <TableCell>{course.title}</TableCell>
-                        <TableCell>{course.description || '-'}</TableCell>
                         <TableCell>{course.duration || '-'}</TableCell>
                         <TableCell>{course.sectionCount || 0}</TableCell>
                         <TableCell align="right">

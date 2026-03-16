@@ -73,9 +73,27 @@ export default function CompletionCertificate({
   }
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle className="font-semibold">Completion Certificate</DialogTitle>
-      <DialogContent className="p-6">
+    <Dialog 
+      open={open} 
+      onClose={onClose} 
+      maxWidth="md" 
+      fullWidth
+      PaperProps={{
+        sx: {
+          borderRadius: 3,
+          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.15)'
+        }
+      }}
+    >
+      <DialogTitle sx={{ 
+        fontWeight: 700, 
+        fontSize: '1.5rem',
+        color: '#1a1a2e',
+        borderBottom: '1px solid #e5e7eb'
+      }}>
+        Completion Certificate
+      </DialogTitle>
+      <DialogContent sx={{ p: 4, backgroundColor: '#f9fafb' }}>
         <div className="space-y-6">
           {/* Certificate Preview */}
           <div
@@ -114,13 +132,34 @@ export default function CompletionCertificate({
           </div>
         </div>
       </DialogContent>
-      <DialogActions className="p-4">
-        <Button onClick={onClose} variant="outlined">
+      <DialogActions sx={{ p: 3, borderTop: '1px solid #e5e7eb', gap: 2 }}>
+        <Button 
+          onClick={onClose} 
+          variant="outlined"
+          sx={{
+            borderColor: '#e5e7eb',
+            color: '#7c3aed',
+            fontWeight: 600,
+            textTransform: 'none',
+            '&:hover': {
+              backgroundColor: 'rgba(124, 58, 237, 0.08)',
+              borderColor: '#7c3aed'
+            }
+          }}
+        >
           Close
         </Button>
         <Button
           onClick={downloadPDF}
           variant="contained"
+          sx={{
+            background: 'linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%)',
+            fontWeight: 600,
+            textTransform: 'none',
+            '&:hover': {
+              boxShadow: '0 4px 12px rgba(124, 58, 237, 0.4)'
+            }
+          }}
         >
           Download as PDF
         </Button>

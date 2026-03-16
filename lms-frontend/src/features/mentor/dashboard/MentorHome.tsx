@@ -17,6 +17,7 @@ import {
   TextField
 } from '@mui/material'
 import { Search as SearchIcon } from '@mui/icons-material'
+import MentorSessionsList from '../../interaction/MentorSessionsList'
 
 export default function MentorHome() {
   const navigate = useNavigate()
@@ -90,10 +91,12 @@ export default function MentorHome() {
         <Stack spacing={1}>
           <Typography variant="h5">Mentor Dashboard</Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            View assigned batches and course progress reports.
+            View assigned batches, course progress reports, and manage interaction sessions.
           </Typography>
         </Stack>
       </Paper>
+
+      <MentorSessionsList />
 
       <Stack direction={{ xs: 'column', md: 'row' }} spacing={3} alignItems="stretch">
         <Paper sx={{ p: { xs: 2.5, md: 3 }, borderRadius: 3, minWidth: 280, flex: 1 }}>

@@ -1,0 +1,52 @@
+{
+  "sessionId": "69b5ccd74bc5599c73642d48",
+  "mentor": "6995f7628c682a6a6fa82b68",
+  "courses": [
+    "69b4ee857b0114bbfd6e53c9"
+  ],
+  "startTime": "2026-03-14T21:03:00.000Z",
+  "actualStartTime": "2026-03-14T21:02:36.003Z",
+  "actualEndTime": "2026-03-14T21:03:15.901Z",
+  "durationMinutes": 1,
+  "chatLog": [
+    {
+      "sender": "698f871c778527efe217de6a",
+      "senderName": "Bharat",
+      "type": "text",
+      "content": "Hi",
+      "isGroupChat": true,
+      "recipient": null,
+      "timestamp": "2026-03-14T21:02:59.344Z",
+      "_id": "69b5cd034bc5599c73642e06"
+    },
+    {
+      "sender": "6995f7628c682a6a6fa82b68",
+      "senderName": "Baljeet",
+      "type": "text",
+      "content": "Hi",
+      "isGroupChat": true,
+      "recipient": null,
+      "timestamp": "2026-03-14T21:03:03.865Z",
+      "_id": "69b5cd074bc5599c73642e57"
+    }
+  ],
+  "whiteboardLog": [],
+  "userActivityLog": [
+    {
+      "userId": "698f871c778527efe217de6a",
+      "userName": "Bharat",
+      "action": "joined",
+      "timestamp": "2026-03-14T21:02:53.216Z",
+      "duration": 0,
+      "_id": "69b5ccfd4bc5599c73642da9"
+    },
+    {
+      "userId": "6995f7628c682a6a6fa82b68",
+      "userName": "Unknown",
+      "action": "left",
+      "timestamp": "2026-03-14T21:03:10.743Z",
+      "duration": 0,
+      "_id": "69b5cd0e4bc5599c73642efe"
+    }
+  ]
+}

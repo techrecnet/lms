@@ -1,0 +1,211 @@
+{
+  "sessionId": "69b5c487a002c0bfc6b390fa",
+  "mentor": "6995f7628c682a6a6fa82b68",
+  "courses": [
+    "69b4ee857b0114bbfd6e53c9"
+  ],
+  "startTime": "2026-03-14T20:27:00.000Z",
+  "actualStartTime": null,
+  "actualEndTime": "2026-03-14T21:01:24.381Z",
+  "durationMinutes": 30,
+  "chatLog": [
+    {
+      "sender": "6995f7628c682a6a6fa82b68",
+      "senderName": "Baljeet",
+      "type": "text",
+      "content": "asdsad",
+      "isGroupChat": true,
+      "recipient": null,
+      "timestamp": "2026-03-14T20:40:59.390Z",
+      "_id": "69b5c7db0f8572d8d8bb06ab"
+    }
+  ],
+  "whiteboardLog": [
+    {
+      "action": "draw",
+      "data": {
+        "timestamp": "2026-03-14T20:32:23.127Z"
+      },
+      "timestamp": "2026-03-14T20:32:23.236Z",
+      "_id": "69b5c5d7672041105924ef13"
+    },
+    {
+      "action": "draw",
+      "data": {
+        "timestamp": "2026-03-14T20:32:23.596Z"
+      },
+      "timestamp": "2026-03-14T20:32:23.701Z",
+      "_id": "69b5c5d7672041105924ef17"
+    },
+    {
+      "action": "draw",
+      "data": {
+        "timestamp": "2026-03-14T20:32:26.470Z"
+      },
+      "timestamp": "2026-03-14T20:32:26.597Z",
+      "_id": "69b5c5da672041105924ef46"
+    },
+    {
+      "action": "draw",
+      "data": {
+        "timestamp": "2026-03-14T20:32:35.732Z"
+      },
+      "timestamp": "2026-03-14T20:32:35.811Z",
+      "_id": "69b5c5e3672041105924efc9"
+    },
+    {
+      "action": "draw",
+      "data": {
+        "timestamp": "2026-03-14T20:32:36.147Z"
+      },
+      "timestamp": "2026-03-14T20:32:36.263Z",
+      "_id": "69b5c5e4672041105924efd0"
+    },
+    {
+      "action": "draw",
+      "data": {
+        "timestamp": "2026-03-14T20:32:36.471Z"
+      },
+      "timestamp": "2026-03-14T20:32:36.532Z",
+      "_id": "69b5c5e4672041105924efd8"
+    },
+    {
+      "action": "draw",
+      "data": {
+        "timestamp": "2026-03-14T20:32:37.487Z"
+      },
+      "timestamp": "2026-03-14T20:32:37.565Z",
+      "_id": "69b5c5e5672041105924f006"
+    },
+    {
+      "action": "draw",
+      "data": {
+        "timestamp": "2026-03-14T20:32:38.245Z"
+      },
+      "timestamp": "2026-03-14T20:32:38.354Z",
+      "_id": "69b5c5e6672041105924f010"
+    },
+    {
+      "action": "draw",
+      "data": {
+        "timestamp": "2026-03-14T20:32:39.373Z"
+      },
+      "timestamp": "2026-03-14T20:32:39.445Z",
+      "_id": "69b5c5e7672041105924f03d"
+    },
+    {
+      "action": "draw",
+      "data": {
+        "timestamp": "2026-03-14T20:33:05.634Z"
+      },
+      "timestamp": "2026-03-14T20:33:05.761Z",
+      "_id": "69b5c601672041105924f30f"
+    },
+    {
+      "action": "draw",
+      "data": {
+        "timestamp": "2026-03-14T20:33:06.565Z"
+      },
+      "timestamp": "2026-03-14T20:33:06.674Z",
+      "_id": "69b5c602672041105924f32b"
+    },
+    {
+      "action": "draw",
+      "data": {
+        "timestamp": "2026-03-14T20:33:12.265Z"
+      },
+      "timestamp": "2026-03-14T20:33:12.362Z",
+      "_id": "69b5c608672041105924f3d3"
+    },
+    {
+      "action": "draw",
+      "data": {
+        "timestamp": "2026-03-14T20:33:19.634Z"
+      },
+      "timestamp": "2026-03-14T20:33:19.738Z",
+      "_id": "69b5c60f672041105924f4d6"
+    },
+    {
+      "action": "draw",
+      "data": {
+        "timestamp": "2026-03-14T20:33:34.651Z"
+      },
+      "timestamp": "2026-03-14T20:33:34.782Z",
+      "_id": "69b5c61e672041105924f71e"
+    },
+    {
+      "action": "draw",
+      "data": {
+        "timestamp": "2026-03-14T20:33:35.108Z"
+      },
+      "timestamp": "2026-03-14T20:33:35.207Z",
+      "_id": "69b5c61f672041105924f72f"
+    },
+    {
+      "action": "draw",
+      "data": {
+        "timestamp": "2026-03-14T20:33:39.165Z"
+      },
+      "timestamp": "2026-03-14T20:33:39.286Z",
+      "_id": "69b5c623672041105924f7d3"
+    },
+    {
+      "action": "draw",
+      "data": {
+        "timestamp": "2026-03-14T20:33:41.205Z"
+      },
+      "timestamp": "2026-03-14T20:33:41.335Z",
+      "_id": "69b5c625672041105924f833"
+    },
+    {
+      "action": "draw",
+      "data": {
+        "timestamp": "2026-03-14T20:33:43.910Z"
+      },
+      "timestamp": "2026-03-14T20:33:43.987Z",
+      "_id": "69b5c627672041105924f8e9"
+    },
+    {
+      "action": "draw",
+      "data": {
+        "timestamp": "2026-03-14T20:33:44.618Z"
+      },
+      "timestamp": "2026-03-14T20:33:44.747Z",
+      "_id": "69b5c628672041105924f8fe"
+    },
+    {
+      "action": "draw",
+      "data": {
+        "timestamp": "2026-03-14T20:33:52.207Z"
+      },
+      "timestamp": "2026-03-14T20:33:52.300Z",
+      "_id": "69b5c630672041105924fa78"
+    },
+    {
+      "action": "draw",
+      "data": {
+        "timestamp": "2026-03-14T20:33:52.764Z"
+      },
+      "timestamp": "2026-03-14T20:33:52.868Z",
+      "_id": "69b5c630672041105924fa8f"
+    },
+    {
+      "action": "draw",
+      "data": {
+        "timestamp": "2026-03-14T20:34:06.432Z"
+      },
+      "timestamp": "2026-03-14T20:34:06.536Z",
+      "_id": "69b5c63e672041105924fd4e"
+    }
+  ],
+  "userActivityLog": [
+    {
+      "userId": "698f871c778527efe217de6a",
+      "userName": "Bharat",
+      "action": "joined",
+      "timestamp": "2026-03-14T20:50:10.683Z",
+      "duration": 11,
+      "_id": "69b5ca0294ed4437cb75b31b"
+    }
+  ]
+}

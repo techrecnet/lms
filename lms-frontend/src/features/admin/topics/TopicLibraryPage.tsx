@@ -55,7 +55,7 @@ export default function TopicLibraryPage() {
     setLoading(true)
     try {
       const [topicRes, courseRes] = await Promise.all([
-        api.get('/api/topics-lib', {
+        api.get('/topics-lib', {
           params: { courseId: courseId || undefined }
         }),
         api.get('/courses')
@@ -81,7 +81,7 @@ export default function TopicLibraryPage() {
 
     setDeleting(true)
     try {
-      await api.delete(`/api/topics-lib/${deleteId}`)
+      await api.delete(`/topics-lib/${deleteId}`)
       setSnackbar({
         open: true,
         message: 'Topic deleted successfully',
@@ -132,7 +132,7 @@ export default function TopicLibraryPage() {
     }))
     setBulkLoading(true)
     try {
-      const res = await api.post('/api/topics-lib/bulk', topics)
+      const res = await api.post('/topics-lib/bulk', topics)
       setSnackbar({ open: true, message: `Imported ${res.data.imported} topics`, severity: 'success' })
       setBulkDialog(false)
       load()
@@ -159,7 +159,7 @@ export default function TopicLibraryPage() {
     if (selected.length === 0) return
     if (!window.confirm(`Delete ${selected.length} topics? This cannot be undone.`)) return
     try {
-      await Promise.all(selected.map(id => api.delete(`/api/topics-lib/${id}`)))
+      await Promise.all(selected.map(id => api.delete(`/topics-lib/${id}`)))
       setSnackbar({ open: true, message: `Deleted ${selected.length} topics`, severity: 'success' })
       setSelected([])
       load()

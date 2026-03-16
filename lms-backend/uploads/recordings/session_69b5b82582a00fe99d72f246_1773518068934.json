@@ -1,0 +1,32 @@
+{
+  "sessionId": "69b5b82582a00fe99d72f246",
+  "mentor": "6995f7628c682a6a6fa82b68",
+  "courses": [
+    "69b4ee857b0114bbfd6e53c9"
+  ],
+  "startTime": "2026-03-14T19:34:00.000Z",
+  "endTime": "2026-03-14T19:54:28.934Z",
+  "chatLog": [
+    {
+      "sender": "6995f7628c682a6a6fa82b68",
+      "senderName": "Unknown",
+      "type": "text",
+      "content": "Hi",
+      "isGroupChat": true,
+      "recipient": null,
+      "timestamp": "2026-03-14T19:34:32.679Z",
+      "_id": "69b5b84882a00fe99d72f28b"
+    },
+    {
+      "sender": "6995f7628c682a6a6fa82b68",
+      "senderName": "Unknown",
+      "type": "text",
+      "content": "asds",
+      "isGroupChat": true,
+      "recipient": null,
+      "timestamp": "2026-03-14T19:35:12.288Z",
+      "_id": "69b5b87082a00fe99d72f2f9"
+    }
+  ],
+  "whiteboardLog": []
+}

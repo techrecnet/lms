@@ -1,4 +1,6 @@
 import { Box, Button, Paper, Stack, TextField, Typography } from '@mui/material'
+import ReactQuill from 'react-quill'
+import 'react-quill/dist/quill.snow.css'
 import { ChangeEvent, useEffect, useMemo, useState } from 'react'
 import { ENV } from '../../../app/env'
 
@@ -62,6 +64,23 @@ export default function CourseForm({ title, initialValues, submitLabel, onSubmit
     })
   }
 
+  const quillModules = {
+    toolbar: [
+      [{ header: [1, 2, 3, false] }],
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ list: 'ordered' }, { list: 'bullet' }],
+      ['blockquote', 'code-block'],
+      [{ indent: '-1' }, { indent: '+1' }],
+      [{ color: [] }, { background: [] }],
+      [{ align: [] }],
+      ['link', 'image', 'clean']
+    ]
+  }
+
+  const quillFormats = [
+    'header', 'bold', 'italic', 'underline', 'strike', 'list', 'bullet', 'blockquote', 'code-block', 'indent', 'color', 'background', 'align', 'link', 'image'
+  ]
+
   return (
     <Stack spacing={3}>
       <Paper sx={{ p: { xs: 2.5, md: 3 }, borderRadius: 3 }}>
@@ -84,8 +103,18 @@ export default function CourseForm({ title, initialValues, submitLabel, onSubmit
             <TextField label="Title" value={values.title} onChange={updateField('title')} />
             <TextField label="Description" value={values.description} onChange={updateField('description')} multiline minRows={4} />
             <TextField label="Duration" value={values.duration} onChange={updateField('duration')} />
-            <TextField label="Prerequisites" value={values.prerequisites} onChange={updateField('prerequisites')} multiline minRows={4} />
-            <TextField label="Outcomes" value={values.outcomes} onChange={updateField('outcomes')} multiline minRows={4} />
+            <Box>
+              <Typography variant="subtitle2" sx={{ mb: 1 }}>Prerequisites</Typography>
+              <Box sx={{ '& .ql-editor': { minHeight: 160 } }}>
+                <ReactQuill value={values.prerequisites} onChange={(content) => setValues((prev) => ({ ...prev, prerequisites: content }))} modules={quillModules} formats={quillFormats} />
+              </Box>
+            </Box>
+            <Box>
+              <Typography variant="subtitle2" sx={{ mb: 1 }}>Outcomes</Typography>
+              <Box sx={{ '& .ql-editor': { minHeight: 160 } }}>
+                <ReactQuill value={values.outcomes} onChange={(content) => setValues((prev) => ({ ...prev, outcomes: content }))} modules={quillModules} formats={quillFormats} />
+              </Box>
+            </Box>
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
               <Button variant="contained" onClick={submit} disabled={!values.title.trim()}>
                 {submitLabel}

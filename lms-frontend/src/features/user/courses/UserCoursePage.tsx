@@ -2,10 +2,18 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { api } from '../../../core/api'
 import { useAppSelector } from '../../../shared/hooks/redux'
-import { Box, Button, Paper, Stack, Typography, Radio, RadioGroup, FormControlLabel, Alert, Chip, IconButton } from '@mui/material'
+import { Box, Button, Paper, Stack, Typography, Radio, RadioGroup, FormControlLabel, Alert, Chip, IconButton, Collapse, Divider, AppBar } from '@mui/material'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import ExpandLessIcon from '@mui/icons-material/ExpandLess'
+import MenuIcon from '@mui/icons-material/Menu'
+import MenuOpenIcon from '@mui/icons-material/MenuOpen'
+import Brightness4Icon from '@mui/icons-material/Brightness4'
+import BrightnessHighIcon from '@mui/icons-material/BrightnessHigh'
+import TextFieldsIcon from '@mui/icons-material/TextFields'
+import TocIcon from '@mui/icons-material/Toc'
 import ContentRenderer from '../../../shared/components/ContentRenderer'
 import { ENV } from '../../../app/env'
 import React from 'react'
@@ -48,12 +56,12 @@ export default function UserCoursePage() {
   const [selectedAnswer, setSelectedAnswer] = useState<string>('')
   const [submittedAnswer, setSubmittedAnswer] = useState<boolean>(false)
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null)
-  const [leftPanelWidth, setLeftPanelWidth] = useState<number>(40)
-  const [showLeftPanel, setShowLeftPanel] = useState<boolean>(true)
-  const [isDragging, setIsDragging] = useState(false)
-  const sectionRowRef = useRef<HTMLDivElement | null>(null)
+  const [expandedSectionId, setExpandedSectionId] = useState<string | null>(null)
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(false)
+  const [fontSize, setFontSize] = useState<number>(16)
+  const [showSidebar, setShowSidebar] = useState<boolean>(true)
+  const [showTOC, setShowTOC] = useState<boolean>(false)
   const contentPanelRef = useRef<HTMLDivElement | null>(null)
-  const splitPanelRef = useRef<HTMLDivElement | null>(null)
 
   const load = async () => {
     const res = await api.get(`/courses/${id}`)
@@ -77,6 +85,7 @@ export default function UserCoursePage() {
   useEffect(() => {
     if (!course?.sections || course.sections.length === 0) return
     setActiveSectionId((prev) => prev ?? course.sections[0]._id)
+    setExpandedSectionId(course.sections[0]._id)
     setSelectedContentId(null)
     setSubmittedAnswer(false)
     setSelectedAnswer('')
@@ -87,31 +96,6 @@ export default function UserCoursePage() {
     if (!selectedContentId) return
     contentPanelRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
   }, [selectedContentId])
-
-  useEffect(() => {
-    if (!isDragging) return
-
-    const handleMove = (event: MouseEvent) => {
-      if (!splitPanelRef.current) return
-      const rect = splitPanelRef.current.getBoundingClientRect()
-      const next = ((event.clientX - rect.left) / rect.width) * 100
-      const clamped = Math.min(60, Math.max(20, next))
-      setLeftPanelWidth(clamped)
-      if (!showLeftPanel) setShowLeftPanel(true)
-    }
-
-    const handleUp = () => {
-      setIsDragging(false)
-    }
-
-    window.addEventListener('mousemove', handleMove)
-    window.addEventListener('mouseup', handleUp)
-
-    return () => {
-      window.removeEventListener('mousemove', handleMove)
-      window.removeEventListener('mouseup', handleUp)
-    }
-  }, [isDragging, showLeftPanel])
 
   const markAsComplete = async (contentType: 'topic' | 'library-topic' | 'question', contentId: string) => {
     try {
@@ -157,6 +141,65 @@ export default function UserCoursePage() {
     return topicSequence[idx + 1]?.key ?? null
   }
 
+  const getPrevTopicKey = (currentKey: string) => {
+    const idx = topicSequence.findIndex((t) => t.key === currentKey)
+    if (idx <= 0) return null
+    return topicSequence[idx - 1]?.key ?? null
+  }
+
+  const getTopicNameFromKey = (key: string): string => {
+    if (!key) return ''
+    const [contentType, ...rest] = key.split('-')
+    const fullContentId = rest.join('-')
+    
+    if (contentType === 'inline') {
+      return (activeSection.topics ?? []).find((t: any) => t._id === fullContentId)?.title || ''
+    } else if (contentType === 'library') {
+      return (activeSection.libraryTopics ?? []).find((t: any) => t._id === fullContentId)?.title || ''
+    }
+    return ''
+  }
+
+  const getTableOfContents = (): Array<{ title: string; id: string }> => {
+    if (!selectedContentId) return []
+    const headings: Array<{ title: string; id: string }> = []
+    const contentEl = contentPanelRef.current
+    if (contentEl) {
+      const h3Elements = contentEl.querySelectorAll('h3')
+      h3Elements.forEach((el, idx) => {
+        const text = el.textContent || `Heading ${idx + 1}`
+        headings.push({
+          title: text,
+          id: `heading-${idx}`
+        })
+      })
+    }
+    return headings
+  }
+
+  const scrollToHeading = (index: number) => {
+    const contentEl = contentPanelRef.current
+    if (contentEl) {
+      const h3Elements = contentEl.querySelectorAll('h3')
+      if (h3Elements[index]) {
+        h3Elements[index].scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    }
+  }
+
+  const calculateProgress = (): number => {
+    if (!sections || sections.length === 0) return 0
+    const totalItems = sections.reduce((sum: number, s: any) => {
+      return sum + ((s.topics?.length ?? 0) + (s.libraryTopics?.length ?? 0) + (s.questions?.length ?? 0))
+    }, 0)
+    const completedItems = (
+      (progress?.completedTopics?.length ?? 0) + 
+      (progress?.completedLibraryTopics?.length ?? 0) + 
+      (progress?.completedQuestions?.length ?? 0)
+    )
+    return totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0
+  }
+
   const goToTopic = (key: string) => {
     setSelectedContentId(key)
     setSubmittedAnswer(false)
@@ -164,337 +207,313 @@ export default function UserCoursePage() {
     setIsCorrect(null)
   }
 
-  const scrollSections = (dir: 'left' | 'right') => {
-    const el = sectionRowRef.current
-    if (!el) return
-    const amount = dir === 'left' ? -320 : 320
-    el.scrollBy({ left: amount, behavior: 'smooth' })
+  const toggleSectionExpand = (sectionId: string) => {
+    setExpandedSectionId(expandedSectionId === sectionId ? null : sectionId)
   }
-const [descOpen, setDescOpen] = useState(false)
+
   if (!course) return <Typography>Course not found.</Typography>
 
-  
+  const tableOfContents = getTableOfContents()
+  const progressPercent = calculateProgress()
 
   return (
-    <Stack spacing={3}>
-      <Paper sx={{ p: { xs: 2.5, md: 3 }, borderRadius: 3 }}>
-        <Stack spacing={1}>
-          <Typography variant="h5">{course.title}</Typography>
-          {course.description && (
-            <>
-              <Button
-                size="small"
-                variant="text"
-                onClick={() => setDescOpen((v) => !v)}
-                sx={{ minWidth: 0, px: 1, alignSelf: 'flex-start' }}
-              >
-                {descOpen ? 'Hide Description' : 'Show Description'}
-              </Button>
-              {descOpen && (
-                <Typography variant="body2" sx={{ mt: 1 }}>{course.description}</Typography>
-              )}
-            </>
-          )}
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-            {course.duration && <Typography variant="body2">Duration: {course.duration}</Typography>}
-            {course.prerequisites && (
-              <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
-                Prerequisites: {course.prerequisites}
+    <Box sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      minHeight: '100vh',
+      backgroundColor: isDarkMode ? '#1e1e1e' : '#ffffff',
+      color: isDarkMode ? '#ffffff' : '#000000'
+    }}>
+      {/* Top Bar */}
+      <AppBar position="static" sx={{
+        backgroundColor: isDarkMode ? '#2d2d2d' : '#ffffff',
+        color: isDarkMode ? '#ffffff' : '#000000',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+        borderBottom: `1px solid ${isDarkMode ? '#444444' : '#e5e7eb'}`
+      }}>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ p: 1.5 }} spacing={2}>
+          {/* Left Section - Menu & Course Info */}
+          <Stack direction="row" alignItems="center" spacing={1} sx={{ flex: 1, minWidth: 0 }}>
+            <IconButton 
+              size="small" 
+              onClick={() => setShowSidebar(!showSidebar)}
+              sx={{ color: 'inherit' }}
+            >
+              {showSidebar ? <MenuOpenIcon /> : <MenuIcon />}
+            </IconButton>
+            <Box sx={{ minWidth: 0, flex: 1, cursor: 'pointer' }} onClick={() => setSelectedContentId(null)}>
+              <Typography variant="subtitle2" sx={{ fontWeight: 700, fontSize: '0.95rem' }} noWrap>
+                {course.title}
               </Typography>
-            )}
+              <Typography variant="caption" sx={{ fontSize: '0.75rem', opacity: 0.7 }}>
+                Progress: {progressPercent}%
+              </Typography>
+            </Box>
+          </Stack>
+
+          {/* Right Section - Controls */}
+          <Stack direction="row" alignItems="center" spacing={0.5}>
+            {/* Font Size Controls */}
+            <IconButton 
+              size="small" 
+              onClick={() => setFontSize(Math.max(14, fontSize - 2))}
+              title="Decrease font"
+              sx={{ color: 'inherit' }}
+            >
+              <TextFieldsIcon sx={{ fontSize: 18 }} />
+            </IconButton>
+            <Typography variant="caption" sx={{ width: 20, textAlign: 'center', color: 'inherit' }}>
+              {fontSize}
+            </Typography>
+            <IconButton 
+              size="small" 
+              onClick={() => setFontSize(Math.min(40, fontSize + 2))}
+              title="Increase font"
+              sx={{ color: 'inherit' }}
+            >
+              <TextFieldsIcon sx={{ fontSize: 24 }} />
+            </IconButton>
+            
+            {/* Reset Font */}
+            <IconButton 
+              size="small" 
+              onClick={() => setFontSize(16)}
+              title="Reset font to default"
+              sx={{ color: 'inherit', fontSize: '0.75rem' }}
+            >
+              <Typography sx={{ fontSize: '0.7rem', fontWeight: 700 }}>Reset</Typography>
+            </IconButton>
+
+            {/* Dark Mode Toggle */}
+            <IconButton 
+              size="small" 
+              onClick={() => setIsDarkMode(!isDarkMode)}
+              title={isDarkMode ? 'Light mode' : 'Dark mode'}
+              sx={{ color: 'inherit' }}
+            >
+              {isDarkMode ? <BrightnessHighIcon /> : <Brightness4Icon />}
+            </IconButton>
+
+            {/* Table of Contents */}
+            <IconButton 
+              size="small" 
+              onClick={() => setShowTOC(!showTOC)}
+              title="Table of contents"
+              sx={{ color: 'inherit' }}
+            >
+              <TocIcon />
+            </IconButton>
           </Stack>
         </Stack>
-      </Paper>
+      </AppBar>
 
-      {sections.length > 0 && (
-        <Stack spacing={2}>
-          <Stack direction="row" spacing={1} alignItems="center">
-            <Button variant="outlined" onClick={() => scrollSections('left')}><ChevronLeftIcon /></Button>
+      {/* Main Content Area */}
+      <Box sx={{
+        display: 'flex',
+        flex: 1,
+        backgroundColor: isDarkMode ? '#1e1e1e' : '#ffffff',
+        gap: { xs: 0, md: 0 }
+      }}>
+      {/* Left Sidebar */}
+      <Box sx={{
+        width: showSidebar ? { xs: '100%', sm: '260px', md: '280px' } : 0,
+        transition: 'width 0.3s ease',
+        backgroundColor: isDarkMode ? '#2d2d2d' : '#ffffff',
+        borderRight: showSidebar ? `1px solid ${isDarkMode ? '#444444' : '#e5e7eb'}` : 'none',
+        overflowY: 'auto',
+        overflowX: 'hidden',
+        maxHeight: 'calc(100vh - 120px)',
+        position: { xs: 'relative', sm: 'sticky' },
+        top: 0,
+        p: showSidebar ? { xs: 1, sm: 1.5 } : 0,
+        flexShrink: 0
+      }}>
+        {/* Sidebar Content */}
+        {sections && sections.map((section: any) => (
+          <Box key={section._id} sx={{ mb: 1 }}>
             <Box
-              ref={sectionRowRef}
+              onClick={() => setExpandedSectionId(expandedSectionId === section._id ? null : section._id)}
               sx={{
-                display: 'grid',
-                gridAutoFlow: 'column',
-                gridAutoColumns: { xs: '80%', sm: '50%', md: '220px' },
-                gap: 2,
-                overflowX: 'auto',
-                scrollBehavior: 'smooth',
-                pb: 1,
-                flex: 1
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                p: 0.75,
+                backgroundColor: isDarkMode ? '#3d3d3d' : '#f9fafb',
+                borderRadius: 0.5,
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                fontSize: '0.85rem',
+                fontWeight: 500,
+                color: isDarkMode ? '#ffffff' : '#333333',
+                '&:hover': {
+                  backgroundColor: isDarkMode ? '#4d4d4d' : '#f3f4f6'
+                }
               }}
             >
-              {sections.map((s: any) => {
-                const sectionCompleted = progress?.completedSections?.some((sid: string) => sid === s._id) || false
-                return (
-                  <Paper
-                    key={s._id}
-                    onClick={() => {
-                      setActiveSectionId(s._id)
-                      setSelectedContentId(null)
-                      setSubmittedAnswer(false)
-                      setSelectedAnswer('')
-                      setIsCorrect(null)
-                    }}
-                    sx={{
-                      p: 2,
-                      borderRadius: 2,
-                      cursor: 'pointer',
-                      border: s._id === activeSection?._id ? '2px solid #0f3d30' : '1px solid rgba(27,26,23,0.08)',
-                      backgroundColor: s._id === activeSection?._id ? 'rgba(15, 61, 48, 0.07)' : '#fff',
-                      transition: 'all 0.2s',
-                      position: 'relative'
-                    }}
-                  >
-                    {sectionCompleted && (
-                      <CheckCircleIcon sx={{ position: 'absolute', top: 8, right: 8, color: 'success.main', fontSize: 20 }} />
-                    )}
-                    <Typography variant="subtitle1">{s.title}</Typography>
-                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                      {((s.topics?.length ?? 0) + (s.libraryTopics?.length ?? 0) + (s.questions?.length ?? 0))} items
-                    </Typography>
-                  </Paper>
-                )
-              })}
+              <Typography variant="body2" sx={{ fontSize: '0.85rem', fontWeight: 500, color: 'inherit' }}>
+                {section.title || section.name}
+              </Typography>
+              {expandedSectionId === section._id ? <ExpandLessIcon sx={{ fontSize: 18 }} /> : <ExpandMoreIcon sx={{ fontSize: 18 }} />}
             </Box>
-            <Button variant="outlined" onClick={() => scrollSections('right')}><ChevronRightIcon /></Button>
-          </Stack>
-
-          {activeSection && (
-            <Paper sx={{ p: { xs: 2, md: 2.5 }, borderRadius: 2 }}>
-              <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
-                <Typography variant="h6">{activeSection.title}</Typography>
-                <Stack direction="row" alignItems="center" spacing={1}>
-                  {showLeftPanel ? (
-                    <Button variant="outlined" size="small" onClick={() => setShowLeftPanel(false)}>
-                      Collapse
-                    </Button>
-                  ) : (
-                    <Button variant="outlined" size="small" onClick={() => setShowLeftPanel(true)}>
-                      Expand
-                    </Button>
-                  )}
-                </Stack>
-              </Stack>
-              <Box
-                ref={splitPanelRef}
-                sx={{
-                  display: 'flex',
-                  flexDirection: { xs: 'column', md: 'row' },
-                  minHeight: 400,
-                  position: 'relative'
-                }}
-              >
-                {/* Left Column - Adjustable Width */}
-                {showLeftPanel && (
-                  <Box sx={{ 
-                    width: { xs: '100%', md: '25%' }, 
-                    minWidth: { md: 220 },
-                    maxWidth: { md: 340 },
-                    borderRight: { md: '1px solid #e0e0e0' }, 
-                    pr: { md: 2 }, 
-                    overflow: 'auto', 
-                    maxHeight: 500,
-                    transition: 'width 0.3s ease'
-                  }}>
-                    <Stack spacing={1}>
-                      {/* Inline Topics */}
-                      {(activeSection.topics ?? []).map((t: any, idx: number, arr: any[]) => {
-                        const completed = isCompleted('topic', t._id)
-                        return (
-                          <div key={`inline-wrap-${t._id}`}>
-                            <Typography
-                              key={`inline-${t._id}`}
-                              variant="body2"
-                              onClick={() => {
-                                setSelectedContentId(`inline-${t._id}`)
-                                setSubmittedAnswer(false)
-                                setSelectedAnswer('')
-                                setIsCorrect(null)
-                              }}
-                              sx={{
-                                cursor: 'pointer',
-                                p: 1,
-                                borderRadius: 1,
-                                backgroundColor: selectedContentId === `inline-${t._id}` ? 'rgba(15, 61, 48, 0.1)' : 'transparent',
-                                border: selectedContentId === `inline-${t._id}` ? '1px solid #0f3d30' : '1px solid transparent',
-                                transition: 'all 0.2s',
-                                display: 'flex',
-                                gap: 1,
-                                alignItems: 'center',
-                                '&:hover': {
-                                  backgroundColor: 'rgba(15, 61, 48, 0.05)'
-                                }
-                              }}
-                            >
-                              {completed && <CheckCircleIcon sx={{ fontSize: 16, color: 'success.main' }} />}
-                              {t.title}
-                            </Typography>
-                            <hr style={{ margin: '4px 0', border: 0, borderTop: '1px solid #eee' }} />
-                          </div>
-                        )
-                      })}
-                          
-                          {/* Library Topics */}
-                        {(activeSection.libraryTopics ?? []).map((t: any, idx: number, arr: any[]) => {
-                            const completed = isCompleted('library-topic', t._id)
-                            return (
-                              <div key={`library-wrap-${t._id}`}>
-                                <Typography
-                                  key={`library-${t._id}`}
-                                  variant="body2"
-                                  onClick={() => {
-                                    setSelectedContentId(`library-${t._id}`)
-                                    setSubmittedAnswer(false)
-                                    setSelectedAnswer('')
-                                    setIsCorrect(null)
-                                  }}
-                                  sx={{
-                                    cursor: 'pointer',
-                                    p: 1,
-                                    borderRadius: 1,
-                                    backgroundColor: selectedContentId === `library-${t._id}` ? 'rgba(15, 61, 48, 0.1)' : 'transparent',
-                                    border: selectedContentId === `library-${t._id}` ? '1px solid #0f3d30' : '1px solid transparent',
-                                    transition: 'all 0.2s',
-                                    display: 'flex',
-                                    gap: 1,
-                                    alignItems: 'center',
-                                    '&:hover': {
-                                      backgroundColor: 'rgba(15, 61, 48, 0.05)'
-                                    }
-                                  }}
-                                >
-                                  {completed && <CheckCircleIcon sx={{ fontSize: 16, color: 'success.main' }} />}
-                                  {t.title}
-                                  <Chip label="Content → Library" size="small" variant="outlined" />
-                                </Typography>
-                                <hr style={{ margin: '4px 0', border: 0, borderTop: '1px solid #eee' }} />
-                              </div>
-                            )
-                          })}
-                          
-                          {/* MCQ Questions */}
-                          {(activeSection.questions ?? []).map((q: any) => {
-                            const completed = isCompleted('question', q._id)
-                            return (
-                              <Typography
-                                key={`mcq-${q._id}`}
-                                variant="body2"
-                                onClick={() => {
-                                  setSelectedContentId(`mcq-${q._id}`)
-                                  setSubmittedAnswer(false)
-                                  setSelectedAnswer('')
-                                  setIsCorrect(null)
-                                }}
-                                sx={{
-                                  cursor: 'pointer',
-                                  p: 1,
-                                  borderRadius: 1,
-                                  backgroundColor: selectedContentId === `mcq-${q._id}` ? 'rgba(15, 61, 48, 0.1)' : 'transparent',
-                                  border: selectedContentId === `mcq-${q._id}` ? '1px solid #0f3d30' : '1px solid transparent',
-                                  transition: 'all 0.2s',
-                                  display: 'flex',
-                                  gap: 1,
-                                  alignItems: 'center',
-                                  '&:hover': {
-                                    backgroundColor: 'rgba(15, 61, 48, 0.05)'
-                                  }
-                                }}
-                              >
-                                {completed && <CheckCircleIcon sx={{ fontSize: 16, color: 'success.main' }} />}
-                                {q.title}
-                                <Chip label={`MCQ → ${q.level}`} size="small" variant="outlined" />
-                              </Typography>
-                            )
-                          })}
-
-                      {(activeSection.topics ?? []).length === 0 && (activeSection.libraryTopics ?? []).length === 0 && (activeSection.questions ?? []).length === 0 && (
-                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>No content in this section.</Typography>
-                      )}
-                    </Stack>
-                </Box>
-                )}
-
-                {showLeftPanel && (
+            <Collapse in={expandedSectionId === section._id} timeout="auto">
+              <Stack spacing={0.25} sx={{ pl: 1, mt: 0.5 }}>
+                {/* Topics */}
+                {section.topics && section.topics.map((topic: any) => (
                   <Box
+                    key={topic._id}
+                    onClick={() => {
+                      setActiveSectionId(section._id)
+                      setSelectedContentId(`inline-${topic._id}`)
+                    }}
                     sx={{
-                      display: { xs: 'none', md: 'flex' },
+                      p: 0.75,
+                      pl: 2,
+                      borderLeftWidth: 2,
+                      borderLeftStyle: 'solid',
+                      borderLeftColor: 'indigo',
+                      borderRadius: 0.25,
+                      cursor: 'pointer',
+                      fontSize: '0.8rem',
+                      backgroundColor: selectedContentId === `inline-${topic._id}` ? (isDarkMode ? '#3d3d3d' : '#f3f4f6') : 'transparent',
+                      transition: 'all 0.2s',
+                      color: isDarkMode ? '#ffffff' : '#333333',
+                      display: 'flex',
+                      justifyContent: 'space-between',
                       alignItems: 'center',
-                      position: 'relative'
+                      '&:hover': {
+                        backgroundColor: isDarkMode ? '#3d3d3d' : '#f3f4f6'
+                      }
                     }}
                   >
-                    <Box
-                      onMouseDown={(event) => {
-                        event.preventDefault()
-                        setIsDragging(true)
-                      }}
-                      sx={{
-                        width: 10,
-                        cursor: 'col-resize',
-                        height: '100%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                    >
-                      <Box sx={{ width: 2, height: '70%', bgcolor: 'rgba(27,26,23,0.15)', borderRadius: 2 }} />
-                    </Box>
-                    <IconButton
-                      size="small"
-                      onClick={() => setShowLeftPanel(false)}
-                      sx={{
-                        ml: 0.5,
-                        border: '1px solid rgba(27,26,23,0.15)'
-                      }}
-                    >
-                      <ChevronLeftIcon fontSize="small" />
-                    </IconButton>
+                    <Typography variant="caption" sx={{ fontSize: '0.8rem', flex: 1, color: 'inherit' }}>
+                      {topic.title || topic.name}
+                    </Typography>
+                    {progress?.completedTopics?.includes(topic._id) && (
+                      <CheckCircleIcon sx={{ fontSize: 14, color: 'green', ml: 0.5 }} />
+                    )}
                   </Box>
-                )}
+                ))}
 
-                {!showLeftPanel && (
-                  <IconButton
-                    size="small"
-                    onClick={() => setShowLeftPanel(true)}
+                {/* Library Topics */}
+                {section.libraryTopics && section.libraryTopics.map((libTopic: any) => (
+                  <Box
+                    key={libTopic._id}
+                    onClick={() => {
+                      setActiveSectionId(section._id)
+                      setSelectedContentId(`library-${libTopic._id}`)
+                    }}
                     sx={{
-                      display: { xs: 'none', md: 'flex' },
-                      position: 'absolute',
-                      left: 0,
-                      top: 12,
-                      border: '1px solid rgba(27,26,23,0.15)',
-                      backgroundColor: '#fff'
+                      p: 0.75,
+                      pl: 2,
+                      borderLeftWidth: 2,
+                      borderLeftStyle: 'solid',
+                      borderLeftColor: 'cyan',
+                      borderRadius: 0.25,
+                      cursor: 'pointer',
+                      fontSize: '0.8rem',
+                      backgroundColor: selectedContentId === `library-${libTopic._id}` ? (isDarkMode ? '#3d3d3d' : '#f3f4f6') : 'transparent',
+                      transition: 'all 0.2s',
+                      color: isDarkMode ? '#ffffff' : '#333333',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      '&:hover': {
+                        backgroundColor: isDarkMode ? '#3d3d3d' : '#f3f4f6'
+                      }
                     }}
                   >
-                    <ChevronRightIcon fontSize="small" />
-                  </IconButton>
-                )}
+                    <Typography variant="caption" sx={{ fontSize: '0.8rem', flex: 1, color: 'inherit' }}>
+                      {libTopic.topicName || libTopic.title || libTopic.name}
+                    </Typography>
+                    {progress?.completedLibraryTopics?.includes(libTopic._id) && (
+                      <CheckCircleIcon sx={{ fontSize: 14, color: 'green', ml: 0.5 }} />
+                    )}
+                  </Box>
+                ))}
 
-                {/* Right Column - Adjustable Width */}
-                <Box
-                  ref={contentPanelRef}
-                  sx={{ 
-                  width: { xs: '100%', md: showLeftPanel ? `${100 - leftPanelWidth}%` : '100%' }, 
-                  pl: { md: showLeftPanel ? 2 : 0 }, 
-                  overflow: 'auto', 
-                  maxHeight: 500,
-                  transition: 'width 0.3s ease'
-                }}>
-                  {selectedContentId ? (
-                    (() => {
-                      const [contentType, contentId] = selectedContentId.split('-').slice(0, 2)
-                      const fullContentId = selectedContentId.substring(contentType.length + 1)
+                {/* Questions/Quiz */}
+                {section.questions && section.questions.map((question: any) => (
+                  <Box
+                    key={question._id}
+                    onClick={() => {
+                      setActiveSectionId(section._id)
+                      setSelectedContentId(`mcq-${question._id}`)
+                    }}
+                    sx={{
+                      p: 0.75,
+                      pl: 2,
+                      borderLeftWidth: 2,
+                      borderLeftStyle: 'solid',
+                      borderLeftColor: 'amber',
+                      borderRadius: 0.25,
+                      cursor: 'pointer',
+                      fontSize: '0.8rem',
+                      backgroundColor: selectedContentId === `mcq-${question._id}` ? (isDarkMode ? '#3d3d3d' : '#f3f4f6') : 'transparent',
+                      transition: 'all 0.2s',
+                      color: isDarkMode ? '#ffffff' : '#333333',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      '&:hover': {
+                        backgroundColor: isDarkMode ? '#3d3d3d' : '#f3f4f6'
+                      }
+                    }}
+                  >
+                    <Typography variant="caption" sx={{ fontSize: '0.8rem', flex: 1, color: 'inherit' }}>
+                      {question.title || (question.question ? `${question.question.substring(0, 30)}...` : 'MCQ')}
+                    </Typography>
+                    <Chip label="MCQ" size="small" sx={{ ml: 1, bgcolor: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)', color: isDarkMode ? '#fff' : '#000' }} />
+                    {progress?.completedQuestions?.includes(question._id) && (
+                      <CheckCircleIcon sx={{ fontSize: 14, color: 'green', ml: 0.5 }} />
+                    )}
+                  </Box>
+                ))}
+              </Stack>
+            </Collapse>
+          </Box>
+        ))}
+      </Box>
+      
+      {/* Right Content Area */}
+      <Box sx={{
+        flex: 1,
+        overflowY: 'auto',
+        overflowX: 'hidden',
+        p: { xs: 2, md: 3 },
+        maxHeight: 'calc(100vh - 120px)',
+        backgroundColor: isDarkMode ? '#1e1e1e' : '#ffffff',
+        color: isDarkMode ? '#ffffff' : '#000000',
+        wordWrap: 'break-word',
+        overflowWrap: 'break-word',
+        fontSize: fontSize + 'px',
+        scrollbarWidth: 'none',
+        msOverflowStyle: 'none',
+        '&::-webkit-scrollbar': {
+          display: 'none'
+        },
+        '& *': {
+          wordWrap: 'break-word',
+          overflowWrap: 'break-word'
+        }
+      }} ref={contentPanelRef}>
+        {selectedContentId && activeSection ? (
+          (() => {
+            const [contentType, contentId] = selectedContentId.split('-').slice(0, 2)
+            const fullContentId = selectedContentId.substring(contentType.length + 1)
 
-                      if (contentType === 'inline') {
+            // Render inline topics
+            if (contentType === 'inline') {
                         const content = (activeSection.topics ?? [])
                           .find((t: any) => t._id === fullContentId)
                         const completed = isCompleted('topic', fullContentId)
                         const nextTopicKey = getNextTopicKey(`inline-${fullContentId}`)
                         return content ? (
                           <Stack spacing={2}>
-                            <Typography variant="h6" sx={{ fontWeight: 600 }}>{content.title}</Typography>
+                            <Typography variant="h6" sx={{ fontWeight: 600, color: isDarkMode ? '#ffffff' : '#000000' }}>{content.title}</Typography>
                             {content.content ? (
                               <ContentRenderer content={content.content} />
                             ) : (
-                              <Typography variant="body2" sx={{ color: 'text.secondary' }}>No content available.</Typography>
+                              <Typography variant="body2" sx={{ color: isDarkMode ? '#999999' : '#6b7280' }}>No content available.</Typography>
                             )}
                             {!isMentor && !completed && (
                               <Button 
@@ -516,9 +535,13 @@ const [descOpen, setDescOpen] = useState(false)
                               </Alert>
                             )}
                             {nextTopicKey && (
-                              <Box>
-                                <Button variant="outlined" onClick={() => goToTopic(nextTopicKey)}>
-                                  Next Topic
+                              <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 3 }}>
+                                <Button 
+                                  variant="outlined" 
+                                  onClick={() => goToTopic(nextTopicKey)}
+                                  sx={{ fontSize: '0.875rem' }}
+                                >
+                                  {getTopicNameFromKey(nextTopicKey)} &gt;&gt;
                                 </Button>
                               </Box>
                             )}
@@ -602,11 +625,119 @@ const [descOpen, setDescOpen] = useState(false)
                                 Mentor View - Content preview only. Students can mark topics as complete.
                               </Alert>
                             )}
-                            {nextTopicKey && (
-                              <Box>
-                                <Button variant="outlined" onClick={() => goToTopic(nextTopicKey)}>
-                                  Next Topic
-                                </Button>
+                            {(nextTopicKey || getPrevTopicKey(`library-${fullContentId}`)) && (
+                              <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 3 }}>
+                                {getPrevTopicKey(`library-${fullContentId}`) && (
+                                  <Button 
+                                    variant="outlined" 
+                                    onClick={() => goToTopic(getPrevTopicKey(`library-${fullContentId}`)!)}
+                                    sx={{ fontSize: '0.875rem' }}
+                                  >
+                                    &lt;&lt; {getTopicNameFromKey(getPrevTopicKey(`library-${fullContentId}`) || '')}
+                                  </Button>
+                                )}
+                                {nextTopicKey && (
+                                  <Button 
+                                    variant="outlined" 
+                                    onClick={() => goToTopic(nextTopicKey)}
+                                    sx={{ fontSize: '0.875rem' }}
+                                  >
+                                    {getTopicNameFromKey(nextTopicKey)} &gt;&gt;
+                                  </Button>
+                                )}
+                              </Box>
+                            )}
+                          </Stack>
+                        ) : null
+                      }
+
+                      if (contentType === 'library') {
+                        const content = (activeSection.libraryTopics ?? [])
+                          .find((t: any) => t._id === fullContentId)
+                        const completed = isCompleted('library-topic', fullContentId)
+                        const nextTopicKey = getNextTopicKey(`library-${fullContentId}`)
+                        return content ? (
+                          <Stack spacing={2}>
+                            <Typography variant="h6" sx={{ fontWeight: 600 }}>{content.title}</Typography>
+                            
+                            {content.audio && (
+                              <Box sx={{ p: 2, bgcolor: '#f5f5f5', borderRadius: 1 }}>
+                                <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>Audio</Typography>
+                                <audio
+                                  controls
+                                  style={{ width: '100%' }}
+                                  src={`${apiBase}${content.audio}`}
+                                >
+                                  Your browser does not support the audio element.
+                                </audio>
+                              </Box>
+                            )}
+                            
+                            {content.aiSummary && (
+                              <Box sx={{ p: 2.5, bgcolor: '#f0f7ff', borderRadius: 1, border: '1px solid #90caf9' }}>
+                                <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1.5 }}>
+                                  <Box sx={{ 
+                                    width: 32, 
+                                    height: 32, 
+                                    borderRadius: '50%', 
+                                    bgcolor: '#1976d2', 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    justifyContent: 'center' 
+                                  }}>
+                                    <Typography variant="caption" sx={{ color: 'white', fontWeight: 700 }}>AI</Typography>
+                                  </Box>
+                                  <Typography variant="subtitle2" sx={{ fontWeight: 600, color: 'primary.main' }}>
+                                    Summary
+                                  </Typography>
+                                </Stack>
+                                <Box component="ul" sx={{ m: 0, pl: 2.5, listStyleType: 'disc' }}>
+                                  {content.aiSummary.split('\n').filter((line: string) => line.trim()).map((line: string, index: number) => (
+                                    <Box component="li" key={index} sx={{ mb: 0.5 }}>
+                                      <Typography variant="body2" sx={{ lineHeight: 1.6 }}>
+                                        {line.trim()}
+                                      </Typography>
+                                    </Box>
+                                  ))}
+                                </Box>
+                              </Box>
+                            )}
+                            
+                            {content.content ? (
+                              <ContentRenderer content={content.content} />
+                            ) : (
+                              <Typography variant="body2" sx={{ color: 'text.secondary' }}>No content available.</Typography>
+                            )}
+                            {!isMentor && !completed && (
+                              <Button 
+                                variant="contained" 
+                                color="success"
+                                onClick={() => markAsComplete('library-topic', fullContentId)}
+                              >
+                                Mark as Complete
+                              </Button>
+                            )}
+                            {!isMentor && completed && (
+                              <Alert severity="success" icon={<CheckCircleIcon />}>
+                                You have completed this topic!
+                              </Alert>
+                            )}
+                            {isMentor && (
+                              <Alert severity="info">
+                                Mentor View - Content preview only. Students can mark topics as complete.
+                              </Alert>
+                            )}
+                            {(nextTopicKey) && (
+                              <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 3 }}>
+                                {nextTopicKey && (
+                                  <Button 
+                                    variant="outlined" 
+                                    onClick={() => goToTopic(nextTopicKey)}
+                                    sx={{ fontSize: '0.875rem' }}
+                                  >
+                                    {getTopicNameFromKey(nextTopicKey)} &gt;&gt;
+                                  </Button>
+                                )}
                               </Box>
                             )}
                           </Stack>
@@ -617,9 +748,10 @@ const [descOpen, setDescOpen] = useState(false)
                         const question = (activeSection.questions ?? [])
                           .find((q: any) => q._id === fullContentId)
                         const completed = isCompleted('question', fullContentId)
+                        const nextTopicKey = getNextTopicKey(`mcq-${fullContentId}`)
                         return question ? (
                           <Stack spacing={2}>
-                            <Typography variant="h6" sx={{ fontWeight: 600 }}>{question.title}</Typography>
+                            <Typography variant="h6" sx={{ fontWeight: 600, color: isDarkMode ? '#ffffff' : '#000000' }}>{question.title}</Typography>
                             <Chip label={`Level: ${question.level}`} size="small" />
                             
                             {isMentor ? (
@@ -671,9 +803,20 @@ const [descOpen, setDescOpen] = useState(false)
                                   setSelectedAnswer('')
                                   setIsCorrect(null)
                                 }}>
-                                  Try Again
+                                  Reset Answer
                                 </Button>
                               </Stack>
+                            )}
+                            {nextTopicKey && (
+                              <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 3 }}>
+                                <Button 
+                                  variant="outlined" 
+                                  onClick={() => goToTopic(nextTopicKey)}
+                                  sx={{ fontSize: '0.875rem' }}
+                                >
+                                  {getTopicNameFromKey(nextTopicKey)} &gt;&gt;
+                                </Button>
+                              </Box>
                             )}
                           </Stack>
                         ) : null
@@ -681,23 +824,201 @@ const [descOpen, setDescOpen] = useState(false)
 
                       return null
                     })()
-                  ) : (
-                    <Typography variant="body2" sx={{ color: 'text.secondary', fontStyle: 'italic' }}>
-                      Select a topic or question from the left to view its content.
-                    </Typography>
-                  )}
-                </Box>
-              </Box>
-            </Paper>
-          )}
-        </Stack>
-      )}
-
-      {sections.length === 0 && (
-        <Paper sx={{ p: 2, borderRadius: 2 }}>
-          <Typography variant="body2" sx={{ color: 'text.secondary' }}>No sections yet.</Typography>
-        </Paper>
-      )}
-    </Stack>
+                ) : (
+                  <Stack spacing={3}>
+                    {course.coverImage && (
+                      <Box sx={{
+                        width: '100%',
+                        height: '300px',
+                        borderRadius: 2,
+                        overflow: 'hidden',
+                        backgroundColor: isDarkMode ? '#2d2d2d' : '#f0f0f0'
+                      }}>
+                        <img
+                          src={`${apiBase}${course.coverImage}`}
+                          alt={course.title}
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover'
+                          }}
+                        />
+                      </Box>
+                    )}
+                    
+                    <Box>
+                      <Typography variant="h5" sx={{ fontWeight: 700, mb: 1, color: isDarkMode ? '#ffffff' : '#000000' }}>
+                        {course.title}
+                      </Typography>
+                      {course.description && (
+                        <Typography variant="body1" sx={{ mb: 2, color: isDarkMode ? '#cccccc' : '#4b5563', lineHeight: 1.6 }}>
+                          {course.description}
+                        </Typography>
+                      )}
+                    </Box>
+                    
+                    {course.prerequisites && (
+                      <Box sx={{
+                        p: 2,
+                        backgroundColor: isDarkMode ? '#2d2d2d' : '#f9fafb',
+                        borderRadius: 1,
+                        border: `1px solid ${isDarkMode ? '#444444' : '#e5e7eb'}`
+                      }}>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1.5, color: isDarkMode ? '#ffffff' : '#000000' }}>Prerequisites</Typography>
+                        {Array.isArray(course.prerequisites) ? (
+                          <Box component="ul" sx={{ m: 0, pl: 2.5, listStyleType: 'disc' }}>
+                            {course.prerequisites.map((prereq: string, idx: number) => (
+                              <Typography component="li" key={idx} variant="body2" sx={{ mb: 0.5, color: isDarkMode ? '#cccccc' : '#6b7280' }}>
+                                {prereq}
+                              </Typography>
+                            ))}
+                          </Box>
+                        ) : (
+                          <ContentRenderer content={course.prerequisites || ''} />
+                        )}
+                      </Box>
+                    )}
+                    
+                    {course.outcomes && (
+                      <Box sx={{
+                        p: 2,
+                        backgroundColor: isDarkMode ? '#2d2d2d' : '#f9fafb',
+                        borderRadius: 1,
+                        border: `1px solid ${isDarkMode ? '#444444' : '#e5e7eb'}`
+                      }}>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1.5, color: isDarkMode ? '#ffffff' : '#000000' }}>Learning Outcomes</Typography>
+                        {Array.isArray(course.outcomes) ? (
+                          <Box component="ul" sx={{ m: 0, pl: 2.5, listStyleType: 'disc' }}>
+                            {course.outcomes.map((outcome: string, idx: number) => (
+                              <Typography component="li" key={idx} variant="body2" sx={{ mb: 0.5, color: isDarkMode ? '#cccccc' : '#6b7280' }}>
+                                {outcome}
+                              </Typography>
+                            ))}
+                          </Box>
+                        ) : (
+                          <ContentRenderer content={course.outcomes || ''} />
+                        )}
+                      </Box>
+                    )}
+                    
+                    <Stack direction="row" spacing={2} sx={{ flexWrap: 'wrap' }}>
+                      <Box sx={{
+                        flex: '1 1 calc(25% - 6px)',
+                        minWidth: '200px',
+                        p: 2,
+                        backgroundColor: isDarkMode ? '#2d2d2d' : '#f9fafb',
+                        borderRadius: 1,
+                        border: `1px solid ${isDarkMode ? '#444444' : '#e5e7eb'}`,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        textAlign: 'center'
+                      }}>
+                        <Typography variant="body2" sx={{ color: isDarkMode ? '#cccccc' : '#6b7280', mb: 1 }}>Total Sections</Typography>
+                        <Typography variant="h6" sx={{ fontWeight: 600, color: isDarkMode ? '#ffffff' : '#000000' }}>{sections.length}</Typography>
+                      </Box>
+                      
+                      <Box sx={{
+                        flex: '1 1 calc(33% - 8px)',
+                        minWidth: '220px',
+                        p: 2,
+                        backgroundColor: isDarkMode ? '#2d2d2d' : '#f9fafb',
+                        borderRadius: 1,
+                        border: `1px solid ${isDarkMode ? '#444444' : '#e5e7eb'}`,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        textAlign: 'center'
+                      }}>
+                        <Typography variant="body2" sx={{ color: isDarkMode ? '#cccccc' : '#6b7280', mb: 1 }}>Total Library Topics</Typography>
+                        <Typography variant="h6" sx={{ fontWeight: 600, color: isDarkMode ? '#ffffff' : '#000000' }}>{sections.reduce((sum: number, sec: any) => sum + (sec.libraryTopics?.length || 0), 0)}</Typography>
+                      </Box>
+                      
+                      <Box sx={{
+                        flex: '1 1 calc(33% - 8px)',
+                        minWidth: '220px',
+                        p: 2,
+                        backgroundColor: isDarkMode ? '#2d2d2d' : '#f9fafb',
+                        borderRadius: 1,
+                        border: `1px solid ${isDarkMode ? '#444444' : '#e5e7eb'}`,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        textAlign: 'center'
+                      }}>
+                        <Typography variant="body2" sx={{ color: isDarkMode ? '#cccccc' : '#6b7280', mb: 1 }}>Total MCQs</Typography>
+                        <Typography variant="h6" sx={{ fontWeight: 600, color: isDarkMode ? '#ffffff' : '#000000' }}>{sections.reduce((sum: number, sec: any) => sum + (sec.questions?.length || 0), 0)}</Typography>
+                      </Box>
+                    </Stack>
+                    
+                    <Box sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      minHeight: '200px',
+                      color: isDarkMode ? '#666666' : '#9ca3af'
+                    }}>
+                      <Typography>Select a topic from the left menu to get started</Typography>
+                    </Box>
+                  </Stack>
+                )}
+      </Box>
+      
+      {/* Table of Contents Right Sidebar */}
+      <Box sx={{
+        width: showTOC ? { xs: '100%', sm: '260px', md: '280px' } : 0,
+        transition: 'width 0.3s ease',
+        backgroundColor: isDarkMode ? '#2d2d2d' : '#ffffff',
+        borderLeft: showTOC ? `1px solid ${isDarkMode ? '#444444' : '#e5e7eb'}` : 'none',
+        overflowY: showTOC ? 'auto' : 'hidden',
+        overflowX: 'hidden',
+        maxHeight: 'calc(100vh - 120px)',
+        position: { xs: 'relative', sm: 'sticky' },
+        top: 0,
+        p: showTOC ? { xs: 1.5, sm: 1.5 } : 0,
+        flexShrink: 0
+      }}>
+        {showTOC && (
+          <Stack spacing={1}>
+            <Typography variant="subtitle2" sx={{ fontWeight: 700, fontSize: '0.95rem', color: isDarkMode ? '#ffffff' : '#333333' }}>
+              Contents
+            </Typography>
+            {tableOfContents.length > 0 ? (
+              tableOfContents.map((heading, idx) => (
+                <Typography
+                  key={idx}
+                  variant="body2"
+                  onClick={() => {
+                    scrollToHeading(idx)
+                  }}
+                  sx={{
+                    cursor: 'pointer',
+                    p: 0.75,
+                    borderRadius: 0.5,
+                    fontSize: '0.8rem',
+                    color: isDarkMode ? '#ffffff' : '#333333',
+                    backgroundColor: 'transparent',
+                    transition: 'all 0.2s',
+                    '&:hover': {
+                      backgroundColor: isDarkMode ? '#3d3d3d' : '#f3f4f6'
+                    }
+                  }}
+                >
+                  {heading.title}
+                </Typography>
+              ))
+            ) : (
+              <Typography variant="body2" sx={{ fontSize: '0.8rem', color: isDarkMode ? '#999999' : '#9ca3af' }}>
+                No headings found
+              </Typography>
+            )}
+          </Stack>
+        )}
+      </Box>
+    </Box>
+    </Box>
   )
 }
