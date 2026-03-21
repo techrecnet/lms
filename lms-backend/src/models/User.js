@@ -14,6 +14,8 @@ const userSchema = new mongoose.Schema({
   registrationNo: String,
   role: { type: String, enum: ['admin', 'user', 'mentor'], default: 'user' },
   isActive: { type: Boolean, default: true },
+  resetPasswordToken: String,
+  resetPasswordExpires: Date,
   assignedCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }]
 }, { timestamps: true });
 

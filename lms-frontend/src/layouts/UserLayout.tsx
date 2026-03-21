@@ -3,7 +3,7 @@ import Shell from './Shell'
 
 export default function UserLayout({ children }: PropsWithChildren) {
   return (
-    <Shell title="Student • Enterprise LMS">
+    <Shell title="">
       {children}
     </Shell>
   )

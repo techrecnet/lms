@@ -1,8 +1,13 @@
 import { useForm } from 'react-hook-form'
-import { Button, Container, TextField, Typography, Paper, Stack, Box, Chip, Alert } from '@mui/material'
 import { useState } from 'react'
 import { api } from '../../core/api'
-import { Link as RouterLink, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+
+// import template CSS so the signup page matches the HTML template (same as Login)
+import '../../css/bootstrap.min.css'
+import '../../css/slick.css'
+import '../../css/slick-theme.css'
+import '../../css/style.css'
 
 type Form = { name: string; email: string; password: string; role?: 'admin' | 'user' }
 
@@ -29,80 +34,73 @@ export default function Signup() {
   }
 
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        background: 'linear-gradient(160deg, #f6f2eb 0%, #f3efe8 35%, #fff8ef 100%)',
-        position: 'relative',
-        overflow: 'hidden',
-        '&::before': {
-          content: '""',
-          position: 'absolute',
-          width: 520,
-          height: 520,
-          background: 'radial-gradient(circle, rgba(15,61,48,0.2), transparent 60%)',
-          top: -200,
-          left: -140
-        },
-        '&::after': {
-          content: '""',
-          position: 'absolute',
-          width: 460,
-          height: 460,
-          background: 'radial-gradient(circle, rgba(213,121,75,0.2), transparent 60%)',
-          bottom: -170,
-          right: -130
-        }
-      }}
-    >
-      <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
-        <Paper
-          sx={{
-            p: { xs: 3, md: 5 },
-            display: 'grid',
-            gridTemplateColumns: { xs: '1fr', md: '0.95fr 1.05fr' },
-            gap: { xs: 3, md: 5 },
-            borderRadius: 4,
-            background: 'rgba(255,255,255,0.92)',
-            backdropFilter: 'blur(10px)'
-          }}
-        >
-          <Box>
-            <Typography variant="h5" sx={{ mb: 2 }}>Create your account</Typography>
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <Stack spacing={2}>
-                {success && <Alert severity="success">{success}</Alert>}
-                {error && <Alert severity="error">{error}</Alert>}
-                <TextField label="Name" {...register('name', { required: true })} />
-                <TextField label="Email" {...register('email', { required: true })} />
-                <TextField label="Password" type="password" {...register('password', { required: true })} />
-                <Button variant="contained" type="submit" disabled={isSubmitting}>Create account</Button>
-                <Button component={RouterLink} to="/login" color="secondary">Back to login</Button>
-              </Stack>
-            </form>
-          </Box>
+    <div className="main-wrapper">
+      <div className="login-content">
+        <div className="row">
+          <div className="col-lg-6 login-bg d-none d-lg-flex">
+            <div className="login-carousel">
+              <div className="login-carousel-section">
+                <div className="login-banner">
+                  <img src="../../../images/auth-2.svg" className="img-fluid" alt="Signup" />
+                </div>
+                <div className="mentor-course text-center">
+                  <h3 className="mb-2">Join Recnet<span className="text-secondary">LMS</span> today.</h3>
+                  <p>Create and share courses, manage learners, and track progress with ease.</p>
+                </div>
+              </div>
+            </div>
+          </div>
 
-          <Stack spacing={2}>
-            <Chip label="Join the library" color="secondary" sx={{ width: 'fit-content' }} />
-            <Typography variant="h3">Start curating knowledge.</Typography>
-            <Typography variant="body1" sx={{ maxWidth: 420 }}>
-              Bring your training, cohorts, and progress tracking into one calm, capable space.
-            </Typography>
-            <Stack spacing={1} sx={{ pt: 1 }}>
-              <Box sx={{ p: 2.5, borderRadius: 3, backgroundColor: 'rgba(15,61,48,0.06)' }}>
-                <Typography variant="subtitle2">Structured onboarding</Typography>
-                <Typography variant="body2">Guide new hires with clear pathways.</Typography>
-              </Box>
-              <Box sx={{ p: 2.5, borderRadius: 3, backgroundColor: 'rgba(213,121,75,0.08)' }}>
-                <Typography variant="subtitle2">Instant access</Typography>
-                <Typography variant="body2">Give teams the tools they need fast.</Typography>
-              </Box>
-            </Stack>
-          </Stack>
-        </Paper>
-      </Container>
-    </Box>
+          <div className="col-lg-6 login-wrap-bg bg-white">
+            <div className="login-wrapper">
+              <div className="loginbox">
+                <div className="w-100">
+                  <div className="d-flex align-items-center justify-content-between login-header">
+                    <img src="../../../images/logo-white.png" className="img-fluid" alt="Logo" />
+                    <a href="#" className="link-1">Back to Home</a>
+                  </div>
+                  <h1 className="fs-32 fw-bold topic">Create your account</h1>
+
+                  <form onSubmit={handleSubmit(onSubmit)} className="mb-3 pb-3">
+                    {success && <div className="alert alert-success">{success}</div>}
+                    {error && <div className="alert alert-danger">{error}</div>}
+
+                    <div className="mb-3 position-relative">
+                      <label className="form-label">Name<span className="text-danger ms-1">*</span></label>
+                      <div className="position-relative">
+                        <input type="text" className="form-control form-control-lg" {...register('name', { required: true })} />
+                      </div>
+                    </div>
+
+                    <div className="mb-3 position-relative">
+                      <label className="form-label">Email<span className="text-danger ms-1">*</span></label>
+                      <div className="position-relative">
+                        <input type="email" className="form-control form-control-lg" {...register('email', { required: true })} />
+                      </div>
+                    </div>
+
+                    <div className="mb-3 position-relative">
+                      <label className="form-label">Password <span className="text-danger ms-1">*</span></label>
+                      <div className="position-relative">
+                        <input type="password" className="pass-inputs form-control form-control-lg" {...register('password', { required: true })} />
+                      </div>
+                    </div>
+
+                    <div className="d-grid">
+                      <button className="btn btn-secondary btn-lg" type="submit" disabled={isSubmitting}>{isSubmitting ? 'Creating...' : 'Create account'}</button>
+                    </div>
+                  </form>
+
+                  <div className="fs-14 fw-normal d-flex align-items-center justify-content-center">
+                    Already have an account? <a href="/login" className="link-2 ms-1"> Sign in</a>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }

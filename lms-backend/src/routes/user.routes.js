@@ -22,5 +22,6 @@ router.get('/:id', auth, role(['admin', 'mentor']), ctrl.getUserById);
 router.get('/:id/progress', auth, role(['admin', 'mentor']), ctrl.getUserProgress);
 router.put('/:id', auth, role(['admin']), ctrl.updateUser);
 router.delete('/:id', auth, role(['admin']), ctrl.removeUser);
+router.post('/:id/send-mail', auth, role(['admin']), ctrl.sendMailToUser);
 
 module.exports = router;

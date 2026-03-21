@@ -25,8 +25,6 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator'
 import { DragDropContext, Draggable, Droppable, DropResult } from '@hello-pangea/dnd'
-import ReactQuill from 'react-quill'
-import 'react-quill/dist/quill.snow.css'
 
 type Section = { _id: string; title: string; libraryTopics?: any[]; questions?: any[] }
 

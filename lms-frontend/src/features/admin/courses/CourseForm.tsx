@@ -1,6 +1,5 @@
 import { Box, Button, Paper, Stack, TextField, Typography } from '@mui/material'
-import ReactQuill from 'react-quill'
-import 'react-quill/dist/quill.snow.css'
+import { Editor } from '@tinymce/tinymce-react'
 import { ChangeEvent, useEffect, useMemo, useState } from 'react'
 import { ENV } from '../../../app/env'
 
@@ -64,22 +63,16 @@ export default function CourseForm({ title, initialValues, submitLabel, onSubmit
     })
   }
 
-  const quillModules = {
-    toolbar: [
-      [{ header: [1, 2, 3, false] }],
-      ['bold', 'italic', 'underline', 'strike'],
-      [{ list: 'ordered' }, { list: 'bullet' }],
-      ['blockquote', 'code-block'],
-      [{ indent: '-1' }, { indent: '+1' }],
-      [{ color: [] }, { background: [] }],
-      [{ align: [] }],
-      ['link', 'image', 'clean']
-    ]
+  const tinymceConfig = {
+    height: 250,
+    apiKey: ENV.TINYMCE_API_KEY,
+    menubar: true,
+    plugins: ['advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview', 'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen', 'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'],
+    toolbar: 'undo redo | formatselect | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | code fullscreen',
+    setup: (editor: any) => {
+      editor.on('change', () => editor.save())
+    }
   }
-
-  const quillFormats = [
-    'header', 'bold', 'italic', 'underline', 'strike', 'list', 'bullet', 'blockquote', 'code-block', 'indent', 'color', 'background', 'align', 'link', 'image'
-  ]
 
   return (
     <Stack spacing={3}>
@@ -105,15 +98,19 @@ export default function CourseForm({ title, initialValues, submitLabel, onSubmit
             <TextField label="Duration" value={values.duration} onChange={updateField('duration')} />
             <Box>
               <Typography variant="subtitle2" sx={{ mb: 1 }}>Prerequisites</Typography>
-              <Box sx={{ '& .ql-editor': { minHeight: 160 } }}>
-                <ReactQuill value={values.prerequisites} onChange={(content) => setValues((prev) => ({ ...prev, prerequisites: content }))} modules={quillModules} formats={quillFormats} />
-              </Box>
+              <Editor
+                value={values.prerequisites}
+                onEditorChange={(content) => setValues((prev) => ({ ...prev, prerequisites: content }))}
+                init={tinymceConfig}
+              />
             </Box>
             <Box>
               <Typography variant="subtitle2" sx={{ mb: 1 }}>Outcomes</Typography>
-              <Box sx={{ '& .ql-editor': { minHeight: 160 } }}>
-                <ReactQuill value={values.outcomes} onChange={(content) => setValues((prev) => ({ ...prev, outcomes: content }))} modules={quillModules} formats={quillFormats} />
-              </Box>
+              <Editor
+                value={values.outcomes}
+                onEditorChange={(content) => setValues((prev) => ({ ...prev, outcomes: content }))}
+                init={tinymceConfig}
+              />
             </Box>
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
               <Button variant="contained" onClick={submit} disabled={!values.title.trim()}>

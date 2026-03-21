@@ -4,6 +4,7 @@ const Batch = require('../models/Batch');
 const Institute = require('../models/Institute');
 const Progress = require('../models/Progress');
 const bcrypt = require('bcrypt');
+const mailer = require('../services/mail.service')
 const csvParser = require('csv-parser');
 const { Readable } = require('stream');
 const multer = require('multer');
@@ -197,6 +198,9 @@ exports.enrollInCourse = async (req, res) => {
 
   await Batch.findByIdAndUpdate(batch._id, { $addToSet: { courses: courseId, students: user._id } });
 
+  // send course joining mail (non-blocking)
+  try { mailer.sendCourseJoiningMail(user, course).catch(() => {}) } catch (e) {}
+
   res.json({ enrolled: true, batchId: batch._id, courseId });
 };
 
@@ -229,6 +233,40 @@ exports.updateMyProfile = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+// Admin: send arbitrary mail to user (or use templates)
+exports.sendMailToUser = async (req, res) => {
+  try {
+    const userId = req.params.id
+    const { subject, html, type } = req.body
+    const user = await User.findById(userId)
+    if (!user) return res.status(404).json({ msg: 'User not found' })
+
+    // support template types
+    if (type === 'signup') {
+      // when admin triggers a signup mail, we may not have a generated password — use default
+      await require('../services/mail.service').sendSignupMail(user, DEFAULT_PASSWORD)
+      return res.json({ ok: true })
+    }
+
+    if (type === 'course-join') {
+      // need course in body
+      const courseId = req.body.courseId
+      const course = await Course.findById(courseId)
+      if (!course) return res.status(404).json({ msg: 'Course not found' })
+      await require('../services/mail.service').sendCourseJoiningMail(user, course)
+      return res.json({ ok: true })
+    }
+
+    // default: send arbitrary subject/html
+    if (!subject || (!html && !req.body.text)) return res.status(400).json({ msg: 'subject and html/text required' })
+    await require('../services/mail.service').sendMail({ to: user.email, subject, html, text: req.body.text })
+    res.json({ ok: true })
+  } catch (e) {
+    console.error(e)
+    res.status(500).json({ msg: 'Failed to send mail', error: e.message })
+  }
+}
 
 // PUT /users/me/password - Change password
 exports.changePassword = async (req, res) => {

@@ -3,7 +3,7 @@ import Shell from './Shell'
 
 export default function MentorLayout({ children }: PropsWithChildren) {
   return (
-    <Shell title="Mentor • Enterprise LMS">
+    <Shell title="">
       {children}
     </Shell>
   )

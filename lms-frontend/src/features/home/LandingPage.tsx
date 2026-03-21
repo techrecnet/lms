@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { ENV } from '../../app/env'
 import PublicHeader from '../../shared/components/PublicHeader'
+import PublicFooter from '../../shared/components/PublicFooter'
 import SchoolIcon from '@mui/icons-material/School'
 import BookIcon from '@mui/icons-material/Book'
 import BookmarkIcon from '@mui/icons-material/Bookmark'
@@ -21,67 +22,47 @@ export default function LandingPage() {
       try {
         const res = await axios.get(`${ENV.API_BASE_URL}/courses`)
         setCourses(res.data)
-      } catch (error) {
-        console.error('Failed to load courses:', error)
+      } catch (err) {
+        console.error('Failed to load courses', err)
       }
     }
     loadCourses()
   }, [])
 
   const benefits = [
-    {
-      icon: BookIcon,
-      title: 'Flexible Learning',
-      description: 'We believe that high-quality education should be accessible to everyone. Our pricing models are designed to accommodate different budgets and learning styles.'
-    },
-    {
-      icon: BookmarkIcon,
-      title: 'Lifetime Access',
-      description: 'When you enroll in our courses, you\'re not just signing up for temporary learning - you\'re making an investment in lifelong growth.'
-    },
-    {
-      icon: TrendingUpIcon,
-      title: 'Expert Instruction',
-      description: 'Our instructors are seasoned professionals with years of experience in their fields, bringing real-world knowledge to every lesson.'
-    }
-  ]
-
-  const howItWorks = [
-    { step: '01', title: 'Sign-Up or Register', description: 'Look for the Sign-Up or Create Account button and follow the simple registration process.' },
-    { step: '02', title: 'Complete Your Profile', description: 'Add your profile information to personalize your learning experience.' },
-    { step: '03', title: 'Choose Courses', description: 'Browse and select from our extensive collection of quality courses.' },
-    { step: '04', title: 'Access Your Account', description: 'Start learning immediately and track your progress in real-time.' }
+    { title: 'Expert Mentors', description: 'Learn from industry experts and experienced instructors.', icon: BookIcon },
+    { title: 'Certifications', description: 'Get certified on course completion to showcase your skills.', icon: BookmarkIcon },
+    { title: 'Career Growth', description: 'Practical projects and real-world curriculum.', icon: TrendingUpIcon }
   ]
 
   const testimonials = [
-    {
-      name: 'Brenda Slaton',
-      role: 'Designer',
-      image: '/user-41.jpg',
-      text: 'This mentor helped me understand concepts that I had been struggling with for weeks.',
-      rating: 5
-    },
-    {
-      name: 'Adrian Dennis',
-      role: 'Developer',
-      image: '/user-42.webp',
-      text: 'I\'ve learned so much from my mentor\'s personal experience and guidance.',
-      rating: 5
-    },
     {
       name: 'Adrian Coztanza',
       role: 'Architect',
       image: '/user-43.jpg',
       text: 'The advice was useful and practical for my career advancement.',
       rating: 5
+    },
+    {
+      name: 'Samantha Ray',
+      role: 'Product Designer',
+      image: '/user-44.jpg',
+      text: 'Great learning experience with practical examples.',
+      rating: 5
     }
+  ]
+
+  const howItWorks = [
+    { step: 1, title: 'Browse Courses', description: 'Explore curated courses across categories and pick what fits your goals.' },
+    { step: 2, title: 'Enroll & Learn', description: 'Sign up, enroll, and follow structured lessons with hands-on projects.' },
+    { step: 3, title: 'Get Certified', description: 'Complete assessments and receive certificates to showcase your skills.' }
   ]
 
   const faqs = [
     { q: 'How do I enroll in a course?', a: 'Sign up for an account, browse courses, and click enroll. Payment is processed securely.' },
     { q: 'How long do I have access to a course?', a: 'You have lifetime access to all course materials after enrollment.' },
     { q: 'Will I receive a certificate after completing a course?', a: 'Yes, you\'ll receive a certificate of completion upon finishing all course requirements.' },
-    { q: 'What is Dreams LMS?', a: 'Dreams LMS is a comprehensive learning management platform for organizations and individual learners.' },
+    { q: 'What is Recent?', a: 'Recent is a comprehensive learning management platform for organizations and individual learners.' },
     ]
 
   const blogPosts = [
@@ -267,8 +248,8 @@ export default function LandingPage() {
 
                 <div className="mt-6 bg-white text-gray-800 p-3 rounded flex items-center gap-4">
                   <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
-                    <img src="/images/logo-white.svg" alt="avatar" className="w-10" />
-                  </div>
+                        <img src="/images/logo-white.png" alt="avatar" className="w-10" />
+                      </div>
                   <p className="mb-0">“All courses are incredibly helpful and assist people to achieve their goals.”</p>
                 </div>
               </div>
@@ -486,7 +467,7 @@ export default function LandingPage() {
       <section className="py-16 md:py-20 text-white" style={{ backgroundColor: '#392C7D' }}>
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-12">
-            <h3 className="text-3xl md:text-4xl font-bold mb-4">Trusted by 15,000+ Happy Students</h3>
+            <h3 className="text-3xl md:text-4xl font-bold mb-4 text-white">Trusted by 15,000+ Happy Students</h3>
             <p className="text-lg !text-gray-100">
               Learn from the best and achieve your goals with our comprehensive courses
             </p>
@@ -515,7 +496,7 @@ export default function LandingPage() {
       {/* CTA Section */}
       <section className="py-16 md:py-20 bg-white">
         <div className="max-w-2xl mx-auto px-4">
-          <div className="rounded-lg p-8 md:p-12 text-center text-white" style={{ backgroundColor: '#392C7D' }}>
+          <div className="rounded-lg p-8 md:p-12 text-center text-white cta-dark" style={{ backgroundColor: '#392C7D' }}>
             <h3 className="text-3xl md:text-4xl font-bold mb-4">Ready to Get Started?</h3>
             <p className="text-lg mb-8 !text-gray-100">
               Join thousands of educators and learners already using our platform
@@ -541,51 +522,7 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="text-white py-12" style={{ backgroundColor: '#2B2147' }}>
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <SchoolIcon sx={{ fontSize: 28 }} />
-                <span className="font-bold text-xl">Dreams LMS</span>
-              </div>
-              <p className="!text-white-300 text-sm">Platform designed to help organizations, educators, and learners manage, deliver, and track learning.</p>
-            </div>
-            <div>
-              <h5 className="font-bold mb-4">Support</h5>
-              <ul className="space-y-2 !text-white-300 text-sm">
-                <li><a href="#" className="hover:text-white transition">Education</a></li>
-                <li><a href="#" className="hover:text-white transition">Enroll Course</a></li>
-                <li><a href="#" className="hover:text-white transition">Payments</a></li>
-                <li><a href="#" className="hover:text-white transition">Blogs</a></li>
-              </ul>
-            </div>
-            <div>
-              <h5 className="font-bold mb-4">About</h5>
-              <ul className="space-y-2 text-gray-300 text-sm">
-                <li><a href="#" className="hover:text-white transition">Categories</a></li>
-                <li><a href="#" className="hover:text-white transition">Courses</a></li>
-                <li><a href="#" className="hover:text-white transition">About Us</a></li>
-                <li><a href="#" className="hover:text-white transition">FAQ</a></li>
-              </ul>
-            </div>
-            <div>
-              <h5 className="font-bold mb-4">Newsletter</h5>
-              <p className="text-gray-300 text-sm mb-4">Sign up to get updates & news.</p>
-              <input type="email" placeholder="Email Address" className="w-full px-4 py-2 rounded text-gray-900" />
-              <button className="w-full mt-2 px-4 py-2 text-white rounded font-semibold transition" style={{ backgroundColor: '#392C7D' }}>Subscribe</button>
-            </div>
-          </div>
-
-          <div className="border-t border-gray-700 pt-8 flex flex-col md:flex-row justify-between items-center text-gray-300 text-sm">
-            <p>Copyright 2026 © Dreams LMS. All rights reserved.</p>
-            <div className="flex gap-6 mt-4 md:mt-0">
-              <a href="#" className="text-gray-300 transition">Terms & Conditions</a>
-              <a href="#" className="text-gray-300 transition">Privacy Policy</a>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <PublicFooter />
     </div>
   )
 }

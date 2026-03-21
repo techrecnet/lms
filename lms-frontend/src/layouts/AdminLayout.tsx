@@ -4,7 +4,7 @@ import Shell from './Shell'
 
 export default function AdminLayout({ children }: PropsWithChildren) {
   return (
-    <Shell title="Admin Dashboard • Enterprise LMS" isAdmin={true}>
+    <Shell title="" isAdmin={true}>
       <Box sx={{ p: { xs: 2, md: 3 } }}>
         {children}
       </Box>

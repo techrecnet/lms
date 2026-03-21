@@ -87,40 +87,37 @@ export default function Shell({ title, children, isAdmin }: PropsWithChildren<{ 
         }}
       >
         <Toolbar sx={{ minHeight: 80 }}>
-          {isAdmin ? (
-            <Box
-              component={RouterLink}
-              to="/admin"
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                textDecoration: 'none',
-                flexGrow: 1,
-                height: 60
-              }}
-            >
-              <img src={logo} alt="RECNET" style={{ height: '100%', maxWidth: 'auto' }} />
-            </Box>
-          ) : (
-            <Typography
-              variant="h6"
-              sx={{ 
-                flexGrow: 1, 
-                letterSpacing: 0.5,
-                fontWeight: 700,
-                background: 'linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%)',
-                backgroundClip: 'text',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                fontSize: '1.4rem'
-              }}
-              component={RouterLink}
-              to="/"
-              style={{ textDecoration: 'none' }}
-            >
-              {title}
-            </Typography>
-          )}
+          <Box
+            component={RouterLink}
+            to={isAdmin ? '/admin' : '/'}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              textDecoration: 'none',
+              gap: 2,
+            }}
+          >
+            <img src={logo} alt="Recent" style={{ width: 'auto' }} />
+            {!isAdmin && (
+              <Typography
+                variant="h6"
+                sx={{
+                  letterSpacing: 0.5,
+                  fontWeight: 700,
+                  background: 'linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%)',
+                  backgroundClip: 'text',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  fontSize: '1.4rem',
+                  ml: 1
+                }}
+              >
+                {title}
+              </Typography>
+            )}
+          </Box>
+
+          <Box sx={{ flexGrow: 1 }} />
 
           {/* Admin Menu */}
           {user && user.role === 'admin' && isAdmin && (
@@ -190,75 +187,6 @@ export default function Shell({ title, children, isAdmin }: PropsWithChildren<{ 
                     sx={menuItemSx}
                   >
                     Courses
-                  </MenuItem>
-                </Menu>
-              </Box>
-
-              {/* Contents Menu */}
-              <Box>
-                <Button
-                  onClick={handleAdminMenuOpen(setContentsAnchor)}
-                  endIcon={<KeyboardArrowDownIcon sx={{ fontSize: '0.9rem' }} />}
-                  sx={{
-                    color: '#ffffff',
-                    fontWeight: 600,
-                    textTransform: 'none',
-                    fontSize: '0.9rem',
-                    px: 1.2,
-                    py: 0.5,
-                    borderRadius: 1,
-                    transition: 'all 0.2s ease',
-                    '&:hover': {
-                      backgroundColor: 'rgba(255, 255, 255, 0.15)',
-                      color: '#ffffff'
-                    },
-                    ...(contentsAnchor && {
-                      backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                      color: '#ffffff'
-                    })
-                  }}
-                >
-                  Contents
-                </Button>
-                <Menu
-                  anchorEl={contentsAnchor}
-                  open={Boolean(contentsAnchor)}
-                  onClose={handleAdminMenuClose(setContentsAnchor)}
-                  anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-                  transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-                  PaperProps={{
-                    sx: {
-                      borderRadius: 2,
-                      border: '1px solid #e5e7eb',
-                      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
-                      mt: 0.5,
-                      minWidth: 160
-                    }
-                  }}
-                >
-                  <MenuItem
-                    component={RouterLink}
-                    to="/admin/topics-lib"
-                    onClick={handleAdminMenuClose(setContentsAnchor)}
-                    sx={menuItemSx}
-                  >
-                    Topic Library
-                  </MenuItem>
-                  <MenuItem
-                    component={RouterLink}
-                    to="/admin/questions"
-                    onClick={handleAdminMenuClose(setContentsAnchor)}
-                    sx={menuItemSx}
-                  >
-                    Questions
-                  </MenuItem>
-                  <MenuItem
-                    component={RouterLink}
-                    to="/admin/quizzes"
-                    onClick={handleAdminMenuClose(setContentsAnchor)}
-                    sx={menuItemSx}
-                  >
-                    Quizzes
                   </MenuItem>
                 </Menu>
               </Box>

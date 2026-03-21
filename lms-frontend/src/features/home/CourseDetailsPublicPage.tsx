@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
-  Box,
+  Box, 
   Button,
   Container,
   Typography,
@@ -20,10 +20,12 @@ import axios from 'axios'
 import { ENV } from '../../app/env'
 import { useAppSelector } from '../../shared/hooks/redux'
 import PublicHeader from '../../shared/components/PublicHeader'
+import PublicFooter from '../../shared/components/PublicFooter'
 import SchoolIcon from '@mui/icons-material/School'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline'
 import MenuBookIcon from '@mui/icons-material/MenuBook'
+import ContentRenderer from '../../shared/components/ContentRenderer'
 
 export default function CourseDetailsPublicPage() {
   const { id } = useParams()
@@ -150,82 +152,63 @@ export default function CourseDetailsPublicPage() {
     : null
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '#fafafa' }}>
-      {/* Header */}
-      <PublicHeader />
+    <Box sx={{ minHeight: '100vh', bgcolor: '#fff', pt: '88px' }}>
+      {/* Header (hide the big landing banner on this page) */}
+      <PublicHeader hideBanner forceSolid />
 
-      {/* Course Hero */}
-      <Box sx={{ background: 'linear-gradient(135deg, #0f3d30 0%, #1a5c47 100%)', color: '#fff', py: 6 }}>
-        <Container maxWidth="lg">
-          <Stack direction={{ xs: 'column', md: 'row' }} spacing={4} alignItems="center">
-            {imageUrl && (
-              <Box
-                component="img"
-                src={imageUrl}
-                alt={course.title}
-                sx={{
-                  width: { xs: '100%', md: 400 },
-                  height: 300,
-                  objectFit: 'cover',
-                  borderRadius: 3,
-                  boxShadow: '0 8px 24px rgba(0,0,0,0.2)'
-                }}
-              />
-            )}
-            <Stack spacing={2} sx={{ flexGrow: 1 }}>
-              <Typography variant="h3" sx={{ fontWeight: 700, color: '#fff' }}>
-                {course.title}
-              </Typography>
-              <Typography variant="h6" sx={{ color: 'rgba(255,255,255,0.9)' }}>
-                {course.description}
-              </Typography>
-              
+      {/* Course Hero - styled to match landing page colors */}
+      <Container maxWidth="lg" sx={{ py: 6 }}>
+        <Paper sx={{ p: { xs: 3, md: 4 }, display: 'flex', gap: 4, alignItems: 'center', borderRadius: 3, boxShadow: 3, border: '1px solid rgba(57,44,125,0.08)' }}>
+          {imageUrl && (
+            <Box
+              component="img"
+              src={imageUrl}
+              alt={course.title}
+              sx={{ width: { xs: '100%', md: 420 }, height: 280, objectFit: 'cover', borderRadius: 2, boxShadow: '0 8px 30px rgba(25,118,210,0.12)', border: '2px solid rgba(25,118,210,0.06)' }}
+            />
+          )}
+          <Stack spacing={1} sx={{ flexGrow: 1 }}>
+            <Typography variant="h4" sx={{ fontWeight: 700, color: '#000' }}>
+              {course.title}
+            </Typography>
+            <Typography variant="body1" sx={{ color: '#1976d2', fontWeight: 500 }}>
+              {course.description}
+            </Typography>
+            <Stack direction="row" spacing={1} sx={{ mt: 2 }}>
+              {course.duration && <Chip label={course.duration} sx={{ bgcolor: 'rgba(57,44,125,0.06)', color: '#392C7D', fontWeight: 600 }} />}
+              {course.sectionCount > 0 && <Chip label={`${course.sectionCount} section${course.sectionCount !== 1 ? 's' : ''}`} />}
             </Stack>
           </Stack>
-        </Container>
-      </Box>
+        </Paper>
+      </Container>
 
-      <Container maxWidth="lg" sx={{ py: 6 }}>
+      <Container maxWidth="lg" sx={{ py: 4 }}>
         <Stack spacing={4}>
           {/* Prerequisites */}
           {course.prerequisites && (
             <Paper sx={{ p: 4, borderRadius: 3 }}>
-              <Typography variant="h5" sx={{ fontWeight: 600, mb: 2, color: '#0f3d30' }}>
+              <Typography variant="h5" sx={{ fontWeight: 600, mb: 2, color: '#392C7D' }}>
                 Prerequisites
               </Typography>
-              <Stack spacing={1.5}>
-                {course.prerequisites.split('\n').filter((line: string) => line.trim()).map((prereq: string, index: number) => (
-                  <Stack key={index} direction="row" spacing={1.5} alignItems="flex-start">
-                    <CheckCircleOutlineIcon sx={{ color: '#0f3d30', mt: 0.3 }} />
-                    <Typography variant="body1">{prereq}</Typography>
-                  </Stack>
-                ))}
-              </Stack>
+              <ContentRenderer content={course.prerequisites || ''} />
             </Paper>
           )}
 
           {/* Outcomes */}
           {course.outcomes && (
             <Paper sx={{ p: 4, borderRadius: 3 }}>
-              <Typography variant="h5" sx={{ fontWeight: 600, mb: 2, color: '#0f3d30' }}>
+              <Typography variant="h5" sx={{ fontWeight: 600, mb: 2, color: '#392C7D' }}>
                 What You'll Learn
               </Typography>
-              <Stack spacing={1.5}>
-                {course.outcomes.split('\n').filter((line: string) => line.trim()).map((outcome: string, index: number) => (
-                  <Stack key={index} direction="row" spacing={1.5} alignItems="flex-start">
-                    <CheckCircleOutlineIcon sx={{ color: '#0f3d30', mt: 0.3 }} />
-                    <Typography variant="body1">{outcome}</Typography>
-                  </Stack>
-                ))}
-              </Stack>
+              <ContentRenderer content={course.outcomes || ''} />
             </Paper>
           )}
 
           {/* Course Content */}
           <Paper sx={{ p: 4, borderRadius: 3 }}>
             <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 3 }}>
-              <MenuBookIcon sx={{ fontSize: 32, color: '#0f3d30' }} />
-              <Typography variant="h5" sx={{ fontWeight: 600, color: '#0f3d30' }}>
+              <MenuBookIcon sx={{ fontSize: 32, color: '#392C7D' }} />
+              <Typography variant="h5" sx={{ fontWeight: 600, color: '#392C7D' }}>
                 Course Content
               </Typography>
             </Stack>
@@ -282,17 +265,9 @@ export default function CourseDetailsPublicPage() {
           </Paper>
 
           {/* Enroll Now CTA */}
-          <Paper
-            sx={{
-              p: 4,
-              borderRadius: 3,
-              background: 'linear-gradient(135deg, #0f3d30 0%, #1a5c47 100%)',
-              color: '#fff',
-              textAlign: 'center'
-            }}
-          >
+          <Paper sx={{ p: 4, borderRadius: 3, background: 'linear-gradient(135deg, rgba(57,44,125,1) 0%, rgba(57,44,125,0.85) 100%)', color: '#fff', textAlign: 'center' }}>
             <Stack spacing={3} alignItems="center">
-              <Typography variant="h4" sx={{ fontWeight: 700 }}>
+              <Typography variant="h4" sx={{ fontWeight: 700 ,color:'white'}}>
                 {isEnrolled ? 'Continue Learning' : 'Ready to Start Learning?'}
               </Typography>
               <Typography variant="h6" sx={{ opacity: 0.95, maxWidth: 600 }}>
@@ -320,38 +295,11 @@ export default function CourseDetailsPublicPage() {
                   </Button>
                 ) : (
                   <>
-                    <Button
-                      variant="contained"
-                      size="large"
-                      onClick={handleEnroll}
-                      disabled={isEnrolling || isCheckingEnrollment}
-                      sx={{
-                        bgcolor: '#fff',
-                        color: '#0f3d30',
-                        px: 4,
-                        py: 1.5,
-                        fontSize: '1.1rem',
-                        fontWeight: 600,
-                        '&:hover': { bgcolor: '#f0f0f0' }
-                      }}
-                    >
+                    <Button variant="contained" size="large" onClick={handleEnroll} disabled={isEnrolling || isCheckingEnrollment} sx={{ bgcolor: '#fff', color: '#392C7D', px: 4, py: 1.5, fontSize: '1.1rem', fontWeight: 600, '&:hover': { bgcolor: '#f6f5ff' } }}>
                       Enroll Now
                     </Button>
                     {!user && (
-                      <Button
-                        variant="outlined"
-                        size="large"
-                        onClick={() => navigate('/login')}
-                        sx={{
-                          borderColor: '#fff',
-                          color: '#fff',
-                          px: 4,
-                          py: 1.5,
-                          fontSize: '1.1rem',
-                          fontWeight: 600,
-                          '&:hover': { borderColor: '#fff', bgcolor: 'rgba(255, 255, 255, 0.1)' }
-                        }}
-                      >
+                      <Button variant="outlined" size="large" onClick={() => navigate('/login')} sx={{ borderColor: '#fff', color: '#fff', px: 4, py: 1.5, fontSize: '1.1rem', fontWeight: 600, '&:hover': { borderColor: '#fff', bgcolor: 'rgba(255, 255, 255, 0.06)' } }}>
                         Sign In
                       </Button>
                     )}
@@ -363,22 +311,7 @@ export default function CourseDetailsPublicPage() {
         </Stack>
       </Container>
 
-      {/* Footer */}
-      <Box sx={{ bgcolor: '#0f3d30', color: '#fff', py: 4, mt: 6 }}>
-        <Container maxWidth="lg">
-          <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems="center" spacing={2}>
-            <Stack direction="row" alignItems="center" spacing={1}>
-              <SchoolIcon sx={{ fontSize: 28 }} />
-              <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                EduTech LMS
-              </Typography>
-            </Stack>
-            <Typography variant="body2" sx={{ opacity: 0.8 }}>
-              © 2026 EduTech LMS. All rights reserved.
-            </Typography>
-          </Stack>
-        </Container>
-      </Box>
+      <PublicFooter />
     </Box>
   )
 }

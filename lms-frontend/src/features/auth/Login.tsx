@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { api } from '../../core/api'
-import { useAppDispatch } from '../../shared/hooks/redux'
+import { useAppDispatch, useAppSelector } from '../../shared/hooks/redux'
 import { setToken } from './authSlice'
 import { useLocation, useNavigate } from 'react-router-dom'
 
@@ -18,6 +18,18 @@ export default function Login() {
   const dispatch = useAppDispatch()
   const nav = useNavigate()
   const location = useLocation()
+  const token = useAppSelector((s) => s.auth.token)
+
+  useEffect(() => {
+    if (!token) return
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]))
+      const base = payload.role === 'admin' ? '/admin' : payload.role === 'mentor' ? '/mentor' : '/app'
+      nav(base)
+    } catch (err) {
+      // ignore malformed token
+    }
+  }, [token, nav])
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -50,7 +62,7 @@ export default function Login() {
                   <img src="../../../images/auth-1.svg" className="img-fluid" alt="Logo" />
                 </div>
                 <div className="mentor-course text-center">
-                  <h3 className="mb-2">Welcome to <br />Recnet<span className="text-secondary">LMS</span> Courses.</h3>
+                  <h3 className="mb-2">Welcome to <br />Recent<span className="text-secondary"> LMS</span> Courses.</h3>
                   <p>Platform designed to help organizations, educators, and learners manage, deliver, and track learning and training activities.</p>
                 </div>
               </div>
@@ -62,7 +74,7 @@ export default function Login() {
               <div className="loginbox">
                 <div className="w-100">
                   <div className="d-flex align-items-center justify-content-between login-header">
-                    <img src="../../../images/logo.svg" className="img-fluid" alt="Logo" />
+                    <img src="../../../images/logo-white.png" className="img-fluid" alt="Logo" />
                     <a href="#" className="link-1">Back to Home</a>
                   </div>
                   <h1 className="fs-32 fw-bold topic">Sign into Your Account</h1>

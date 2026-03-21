@@ -1,6 +1,11 @@
 import { Routes, Route } from 'react-router-dom'
 import LandingPage from '../features/home/LandingPage'
 import CourseDetailsPublicPage from '../features/home/CourseDetailsPublicPage'
+import CoursesGridPage from '../features/home/CoursesGridPage'
+import TermsPage from '../features/static/TermsPage'
+import PrivacyPage from '../features/static/PrivacyPage'
+import ContactPage from '../features/static/ContactPage'
+import FaqPage from '../features/static/FaqPage'
 import Login from '../features/auth/Login'
 import Signup from '../features/auth/Signup'
 import { RequireAuth, RequireRole } from './guards'
@@ -55,8 +60,15 @@ export default function AppRouter() {
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/courses/:id" element={<CourseDetailsPublicPage />} />
+      <Route path="/courses" element={<CoursesGridPage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
+      {/* alias for legacy /register path used in landing and header */}
+      <Route path="/register" element={<Signup />} />
+      <Route path="/terms" element={<TermsPage />} />
+      <Route path="/privacy" element={<PrivacyPage />} />
+      <Route path="/contact" element={<ContactPage />} />
+      <Route path="/faq" element={<FaqPage />} />
 
       <Route path="/admin" element={
         <RequireRole role="admin">
