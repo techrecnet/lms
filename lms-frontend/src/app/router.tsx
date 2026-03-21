@@ -8,6 +8,8 @@ import ContactPage from '../features/static/ContactPage'
 import FaqPage from '../features/static/FaqPage'
 import Login from '../features/auth/Login'
 import Signup from '../features/auth/Signup'
+import ForgotPassword from '../features/auth/ForgotPassword'
+import ResetPassword from '../features/auth/ResetPassword'
 import { RequireAuth, RequireRole } from './guards'
 import AdminLayout from '../layouts/AdminLayout'
 import UserLayout from '../layouts/UserLayout'
@@ -63,6 +65,8 @@ export default function AppRouter() {
       <Route path="/courses" element={<CoursesGridPage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       {/* alias for legacy /register path used in landing and header */}
       <Route path="/register" element={<Signup />} />
       <Route path="/terms" element={<TermsPage />} />

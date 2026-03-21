@@ -1,6 +1,7 @@
 export const ENV = {
   // Use local backend when developing locally. Uncomment the local URL if running backend on localhost:5000
   API_BASE_URL: 'http://localhost:5000/api',
-  TINYMCE_API_KEY: import.meta.env.VITE_TINYMCE_API_KEY || ''
+  TINYMCE_API_KEY: import.meta.env.VITE_TINYMCE_API_KEY || '',
+  RECAPTCHA_SITE_KEY: import.meta.env.VITE_RECAPTCHA_SITE_KEY || ''
   //API_BASE_URL: 'https://backend.recnet.in/api'
 } as const

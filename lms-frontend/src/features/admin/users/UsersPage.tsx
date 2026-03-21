@@ -28,6 +28,7 @@ import {
   Box,
 } from '@mui/material'
 import { Edit as EditIcon, Delete as DeleteIcon, Add as AddIcon, Visibility as VisibilityIcon } from '@mui/icons-material'
+import MailOutlineIcon from '@mui/icons-material/MailOutline'
 import { api } from '../../../core/api'
 import { ENV } from '../../../app/env'
 import { useNavigate } from 'react-router-dom'
@@ -43,6 +44,11 @@ export default function UsersPage() {
   const [instituteId, setInstituteId] = useState('')
   const [loading, setLoading] = useState(true)
   const [deleteId, setDeleteId] = useState<string | null>(null)
+  const [mailOpen, setMailOpen] = useState(false)
+  const [mailUser, setMailUser] = useState<any | null>(null)
+  const [mailSubject, setMailSubject] = useState('')
+  const [mailBody, setMailBody] = useState('')
+  const [sendingMail, setSendingMail] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [snackbar, setSnackbar] = useState<{
     open: boolean
@@ -258,6 +264,13 @@ export default function UsersPage() {
                           </IconButton>
                           <IconButton
                             size="small"
+                            onClick={() => { setMailUser(user); setMailSubject(''); setMailBody(''); setMailOpen(true) }}
+                            title="Send Mail"
+                          >
+                            <MailOutlineIcon fontSize="small" />
+                          </IconButton>
+                          <IconButton
+                            size="small"
                             onClick={() => navigate(`/admin/users/${user._id}/edit`)}
                             title="Edit"
                           >
@@ -298,6 +311,31 @@ export default function UsersPage() {
           >
             {deleting ? 'Deleting...' : 'Delete'}
           </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Send Mail Dialog */}
+      <Dialog open={mailOpen} onClose={() => setMailOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Send mail to {mailUser?.name || mailUser?.email}</DialogTitle>
+        <DialogContent>
+          <Stack spacing={2} sx={{ mt: 1 }}>
+            <TextField label="Subject" value={mailSubject} onChange={(e) => setMailSubject(e.target.value)} fullWidth />
+            <TextField label="Message (HTML allowed)" value={mailBody} onChange={(e) => setMailBody(e.target.value)} fullWidth multiline minRows={6} />
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setMailOpen(false)}>Cancel</Button>
+          <Button onClick={async () => {
+            if (!mailUser) return
+            setSendingMail(true)
+            try {
+              await api.post(`/users/${mailUser._id}/send-mail`, { subject: mailSubject, html: mailBody })
+              setSnackbar({ open: true, message: 'Mail sent', severity: 'success' })
+              setMailOpen(false)
+            } catch (err: any) {
+              setSnackbar({ open: true, message: err.response?.data?.msg || 'Failed to send mail', severity: 'error' })
+            } finally { setSendingMail(false) }
+          }} variant="contained" disabled={sendingMail}>{sendingMail ? 'Sending...' : 'Send'}</Button>
         </DialogActions>
       </Dialog>
 

@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { api } from '../../core/api'
 import { useAppDispatch, useAppSelector } from '../../shared/hooks/redux'
 import { setToken } from './authSlice'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate, Link } from 'react-router-dom'
 
 // import template CSS so the login page matches the HTML template
 import '../../css/bootstrap.min.css'
@@ -100,7 +100,7 @@ export default function Login() {
                         <label className="form-check-label ms-2" htmlFor="flexCheckDefault">Remember Me</label>
                       </div>
                       <div>
-                        <a href="#" className="link-2">Forgot Password ?</a>
+                        <Link to="/forgot-password" className="link-2">Forgot Password ?</Link>
                       </div>
                     </div>
 
@@ -114,7 +114,7 @@ export default function Login() {
                 
 
                   <div className="fs-14 fw-normal d-flex align-items-center justify-content-center">
-                    Don't you have an account?<a href="/signup" className="link-2 ms-1"> Sign up</a>
+                    Don't you have an account?<Link to="/signup" className="link-2 ms-1"> Sign up</Link>
                   </div>
 
                 </div>
